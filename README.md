@@ -1,2 +1,2 @@
 # ORLA
-ORLA Discord Bot
+Welcome to the Github repository for ORLA.
