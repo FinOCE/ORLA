@@ -1,0 +1,25 @@
+{
+  "name": "orla",
+  "version": "1.0.0",
+  "description": "ORLA Discord Bot",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FinOCE/ORLA.git"
+  },
+  "author": "Finley Sherwood",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/FinOCE/ORLA/issues"
+  },
+  "homepage": "https://github.com/FinOCE/ORLA#readme",
+  "dependencies": {
+    "discord.js": "^12.3.1",
+    "dotenv": "^8.2.0",
+    "glob": "^7.1.6",
+    "path": "^0.12.7"
+  }
+}
