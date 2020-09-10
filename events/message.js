@@ -6,8 +6,17 @@ module.exports = (client, message) => {
     const args = message.content.slice(client.config.prefix.length).split(/ +/)
     const command = args.shift().toLowerCase()
 
-    // Get command and run if it exists
+    // Get command, check if it exists, and make sure the user has permission to use it
     const cmd = client.commands.get(command)
     if (!cmd) return
-    cmd.run(message, args)
+
+    if ((cmd.category === 'staff') && !message.member.hasPermission('MANAGE_MESSAGES')) {
+        client.error('invalidPermission', message)
+        return
+    }
+
+    // Delete command message and run command
+    message.delete().then(_ => {
+        cmd.run(message, args)
+    })
 }

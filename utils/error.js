@@ -1,10 +1,14 @@
 const { DiscordAPIError } = require("discord.js")
 
-module.exports = (method, message, args) => {
+module.exports = (method, message) => {
     const Discord = require('discord.js')
     
     // List all error methods and their responses
     const methods = {
+        "invalidPermission" : {
+            "title": "Invalid Permission",
+            "description": "Sorry, but you don't have permission to use that command."
+        },
         "invalidSyntax": {
             "title": "Invalid Syntax",
             "description": `To check the correct syntax, please type \`${message.client.config.prefix}help [command]\``

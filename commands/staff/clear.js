@@ -5,7 +5,7 @@ module.exports = {
         // Check if the amount specified is valid
         const count = parseInt(args[0])
         if (isNaN(count) || count < 1 || count > 100) {
-            message.client.error('invalidSyntax', message, args)
+            message.client.error('invalidSyntax', message)
             return
         }
 
