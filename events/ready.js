@@ -1,4 +1,4 @@
-module.exports = (client) => {
+module.exports = async (client) => {
     // Set status and show the bot is running
     console.log('Bot is now online')
     client.user.setActivity('orla.pro | .help', { type: 'WATCHING' })

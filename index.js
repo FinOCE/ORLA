@@ -2,6 +2,7 @@ const Discord = require('discord.js')
 const client = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION'] })
 client.config = require('./config.json')
 client.error = require('./utils/error.js')
+client.sql = require('./utils/sql.js')
 
 require('dotenv').config()
 const { glob } = require('glob')
