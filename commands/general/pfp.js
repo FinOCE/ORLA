@@ -23,5 +23,5 @@ module.exports = {
             .setImage(message.guild.members.cache.get(account).user.avatarURL())
             .setFooter(`ORLA - Requested by ${message.author.tag}`, message.client.config.logo);
         message.channel.send(Embed)
-	},
-};
+	}
+}
