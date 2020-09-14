@@ -8,7 +8,6 @@ module.exports = async (client) => {
         const defaultImage = 'https://orla.pro/assets/hosts/default.png'
 
         const data = {
-            series: null,
             seriesImage: defaultImage
         }
         
@@ -18,7 +17,6 @@ module.exports = async (client) => {
             if (client.hosts[event.host].series !== null) {
                 for (const i in client.hosts[event.host].series) {
                     if (event.series === client.hosts[event.host].series[Object.keys(client.hosts[event.host].series)[i]]) {
-                        data['series'] = client.hosts[event.host].series[Object.keys(client.hosts[event.host].series)[i]].title
                         data['seriesImage'] = client.hosts[event.host].series[Object.keys(client.hosts[event.host].series)[i]].image
                     }
                 }
