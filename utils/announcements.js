@@ -13,20 +13,17 @@ module.exports = async (client) => {
         }
         
         if (client.hosts[event.host] !== undefined) {
-            data['color'] = (client.hosts[event.host].color !== null) ? client.hosts[event.host].color : client.config.color
-            data['logo'] = (client.hosts[event.host].log !== null) ? client.hosts[event.host].logo : defaultImage
-            if (client.hosts[event.host].series !== null) {
-                for (const i in client.hosts[event.host].series) {
-                    if (event.series === client.hosts[event.host].series[Object.keys(client.hosts[event.host].series)[i]]) {
-                        data['series'] = client.hosts[event.host].series[Object.keys(client.hosts[event.host].series)[i]].title
-                        data['seriesImage'] = client.hosts[event.host].series[Object.keys(client.hosts[event.host].series)[i]].image
-                    }
-                }
+            data['color'] = (message.client.hosts[event.host].color !== null) ? message.client.hosts[event.host].color : message.client.config.color
+            data['logo'] = (message.client.hosts[event.host].log !== null) ? message.client.hosts[event.host].logo : defaultImage
+            if (message.client.hosts[event.host].series !== null) {
+                data['series'] = message.client.hosts[event.host].series[event.series].title
+                data['seriesImage'] = `https://orla.pro/assets/series/${message.client.hosts[event.host].series[event.series].image}.png`
             }
 
             const topen = (event.topen === 1) ? '' : '\n\n⚠️ ***Registration requires an invite***'
             const stream = (event.stream === null) ? '*Unfortunately this tournament is not planned to be streamed.*' : `*You can watch this tournament's live stream at:*\n➡️** ${event.stream} **`
             const thumbnail = (data['seriesImage'] !== defaultImage) ? data['seriesImage'] : data['logo']
+            const series = (data['series'] !== null) ? `Series: **${data['series']}**\n` : ''
 
             const Embed = new Discord.MessageEmbed()
                 .setColor(data['color'])
@@ -34,7 +31,7 @@ module.exports = async (client) => {
                 .setURL(event.link)
                 .setAuthor(client.hosts[event.host].title, data['logo'])
                 .setFooter('Tournament information provided by https://orla.pro', client.config.logo)
-                .addField(`📋 **__Tournament Details__**`, `${data['series']}Mode: **${event.mode}**\nPrize Pool: **${event.prize}**\n\n`)
+                .addField(`📋 **__Tournament Details__**`, `${series}Mode: **${event.mode}**\nPrize Pool: **${event.prize}**\n\n`)
                 .addField('🔗 **__Links__**', `*You can enter this tournament by registering at:*\n➡️** ${event.link} **${topen}\n\n${stream}`)
                 .addField('🕐 **__Schedule__**',
                     `\`\`\`http\nTournament Date:   ${moment.unix(event.ttime).tz(client.config.timezone).format('dddd Do MMMM')}`
