@@ -4,13 +4,13 @@ module.exports = async (client) => {
     client.user.setActivity('orla.pro | .help', { type: 'WATCHING' })
 
     // Functions to execute
-    //const announcements = require('../utils/announcements.js')
+    const announcements = require('../utils/announcements.js')
     const notifications = require('../utils/notifications.js')
     //const upcoming = require('../utils/upcoming.js')
 
     // Execute functions on an interval
     client.setInterval(function update() {
-        //announcements(client)
+        announcements(client)
         notifications(client)
         //upcoming(client)
 
