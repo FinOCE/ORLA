@@ -2,5 +2,9 @@
     "prefix": ".",
     "timeout": 60,
     "logo": "https://orla.pro/assets/hosts/orla.png",
-    "color": "#74b9ff"
+    "color": "#74b9ff",
+    "timezone": "Australia/Sydney",
+
+    "COMMUNITY": "754929594687029370",
+    "NOTIFICATIONS": "754929640803532820"
 }

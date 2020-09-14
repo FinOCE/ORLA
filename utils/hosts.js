@@ -1,7 +1,7 @@
 module.exports = async (client) => {
     const hostSQL = await client.sql('SELECT * FROM `hosts`')
 
-    const hosts = []
+    const hosts = {}
     for (const host of hostSQL) {
         hosts[host.name] = {
             title: host.title,

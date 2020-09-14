@@ -20,6 +20,7 @@
     "discord.js": "^12.3.1",
     "dotenv": "^8.2.0",
     "glob": "^7.1.6",
+    "moment-timezone": "^0.5.31",
     "mysql2": "^2.1.0",
     "path": "^0.12.7",
     "sequelize": "^6.3.5"
