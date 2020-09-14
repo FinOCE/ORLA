@@ -42,7 +42,7 @@ module.exports = async (client) => {
                     +`\nTournament Starts: ${moment.unix(event.ttime).tz(client.config.timezone).format('h:mma z')}\n\`\`\``)
                 .setThumbnail(thumbnail)
             
-            const channel = client.channels.cache.find(channels => channels.id === client.config.NOTIFICATIONS)
+            const channel = client.channels.cache.find(channels => channels.id === client.config.ANNOUNCEMENTS)
             channel.send(`<@&${client.config.COMMUNITY}>`, Embed)
 
             await client.sql('UPDATE `tournaments` SET `announced`=1 WHERE `title`="'+event.title+'"')
