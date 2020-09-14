@@ -6,13 +6,13 @@ module.exports = async (client) => {
     // Functions to execute
     const announcements = require('../utils/announcements.js')
     const notifications = require('../utils/notifications.js')
-    //const upcoming = require('../utils/upcoming.js')
+    const upcoming = require('../utils/upcoming.js')
 
     // Execute functions on an interval
     client.setInterval(function update() {
         announcements(client)
         notifications(client)
-        //upcoming(client)
+        upcoming(client)
 
         return update
     }(), client.config.timeout * 1000)
