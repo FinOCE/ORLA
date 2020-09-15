@@ -39,8 +39,10 @@ module.exports = async (client) => {
                     +`\nTournament Starts: ${moment.unix(event.ttime).tz(client.config.timezone).format('h:mma z')}\n\`\`\``)
                 .setThumbnail(thumbnail)
             
-            const channel = client.channels.cache.find(channels => channels.id === client.config.ANNOUNCEMENTS)
-            channel.send(`<@&${client.config.COMMUNITY}>`, Embed)
+            for (const id of Object.keys(client.servers)) {
+                const channel = client.channels.cache.find(channels => channels.id === client.servers[id].announcements)
+                channel.send(`<@&${client.servers[id].pingrole}>`, Embed)
+            }
 
             await client.sql('UPDATE `tournaments` SET `announced`=1 WHERE `title`="'+event.title+'"')
         }

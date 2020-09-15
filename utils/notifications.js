@@ -38,9 +38,11 @@ module.exports = async (client) => {
                 .addField(`🔗 **__Links__**`, `*You can enter this tournament by registering at:*\n➡️** ${event.link} **${topen}\n\n${stream}`)
                 .setThumbnail(thumbnail)
             
-            const channel = client.channels.cache.find(channels => channels.id === client.config.NOTIFICATIONS)
-            channel.send(`<@&${client.config.COMMUNITY}>`, Embed)
-
+            for (const id of Object.keys(client.servers)) {
+                const channel = client.channels.cache.find(channels => channels.id === client.servers[message.guild].notifications)
+                channel.send(`<@&${client.servers[message.guild].pingrole}>`, Embed)
+            }
+            
             await client.sql('UPDATE `tournaments` SET `reminded`=1 WHERE `title`="'+event.title+'"')
         }
     }

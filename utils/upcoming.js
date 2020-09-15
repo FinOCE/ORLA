@@ -48,5 +48,7 @@ module.exports = async (client) => {
         }
     }
 
-    client.channels.cache.get(client.config.UPCOMING).messages.fetch(client.config.UPCOMING_MESSAGE).then(msg => msg.edit(Embed))
+    for (const id of Object.keys(client.servers)) {
+        client.channels.cache.get(client.servers[id].upcoming).messages.fetch(client.servers[id].message).then(msg => msg.edit(Embed))
+    }
 }

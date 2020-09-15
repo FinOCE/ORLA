@@ -6,9 +6,6 @@ client.sql = require('./utils/sql.js')
 
 require('dotenv').config()
 
-const hosts = require('./utils/hosts.js')
-_ = (async () => {client.hosts = await hosts(client)})()
-
 const { glob } = require('glob')
 const { parse } = require('path')
 
