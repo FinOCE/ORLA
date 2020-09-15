@@ -2,14 +2,5 @@
     "prefix": ".",
     "timeout": 60,
     "logo": "https://orla.pro/assets/hosts/orla.png",
-    "color": "#74b9ff",
-    "timezone": "Australia/Sydney",
-
-    "COMMUNITY": "754929594687029370",
-    "ALPHA": "754977807351676988",
-    "NOTIFICATIONS": "754929640803532820",
-    "ANNOUNCEMENTS": "754929640803532820",
-    "UPCOMING": "754966915121938462",
-    "UPCOMING_MESSAGE": "754967017362030642",
-    "JOINLEAVE": "754976872974254141"
+    "color": "#74b9ff"
 }

@@ -9,6 +9,9 @@ module.exports = {
         const events = await message.client.sql('SELECT * FROM `tournaments` WHERE `ttime`>'+moment().unix())
         events.sort(function(a, b) {return a.ttime - b.ttime})
 
+        const userSQL = await message.client.sql('SELECT * FROM `users` WHERE `id`="'+message.author.id+'"')
+        const timezone = userSQL[0].timezone
+
         if (0 in events) {
             const event = events[0]
             if (message.client.hosts[event.host] !== undefined) {
@@ -42,9 +45,9 @@ module.exports = {
                     .addField(`📋 **__Tournament Details__**`, `${series}Mode: **${event.mode}**\nPrize Pool: **${event.prize}**\n\n`)
                     .addField('🔗 **__Links__**', `*You can enter this tournament by registering at:*\n➡️** ${event.link} **${topen}\n\n${stream}`)
                     .addField('🕐 **__Schedule__**',
-                        `\`\`\`http\nTournament Date:   ${moment.unix(event.ttime).tz(message.client.config.timezone).format('dddd Do MMMM')}`
-                        +`\nRegistration Ends: ${moment.unix(event.rtime).tz(message.client.config.timezone).format('h:mma z')}`
-                        +`\nTournament Starts: ${moment.unix(event.ttime).tz(message.client.config.timezone).format('h:mma z')}\n\`\`\``)
+                        `This schedule is adjusted for **${timezone.split('/')[1]}** time.\`\`\`http\nTournament Date:   ${moment.unix(event.ttime).tz(timezone).format('dddd Do MMMM')}`
+                        +`\nRegistration Ends: ${moment.unix(event.rtime).tz(timezone).format('h:mma z')}`
+                        +`\nTournament Starts: ${moment.unix(event.ttime).tz(timezone).format('h:mma z')}\n\`\`\``)
                 message.channel.send(Embed)
             }
         }
