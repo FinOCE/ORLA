@@ -5,6 +5,7 @@ module.exports = async (client) => {
     for (const server of serverSQL) {
         servers[server.id] = {
             id: server.id,
+            timezone: server.timezone,
             upcoming: server.upcoming,
             message: server.message,
             announcements: server.announcements,
