@@ -14,7 +14,7 @@ module.exports = {
     async giveRole(message) {
         const users = await message.client.sql('SELECT * FROM `users` WHERE `id`="'+message.author.id+'"')
 
-        const level = this.getLevel(users[0].xp)
+        const level = this.getLevel(users[0].xp)[0]
         
         let roles = await message.client.sql('SELECT * FROM `servers` WHERE `id`="'+message.guild.id+'"')
         roles = JSON.parse(roles[0].xprole)
@@ -34,6 +34,6 @@ module.exports = {
             rankup = 5*(level*level) + 50*level + 100
         }
 
-        return level
+        return [level, rankup, total]
     }
 }
