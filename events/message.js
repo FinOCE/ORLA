@@ -1,6 +1,10 @@
 module.exports = (client, message) => {
     // Don't run if message is sent by bot, or doesn't start with the prefix
     if (message.author.bot) return
+
+    // Give xp where applicable
+    client.xp.addXP(message)
+
     if (!message.content.startsWith(client.config.prefix)) return
 
     const args = message.content.slice(client.config.prefix.length).split(/ +/)
