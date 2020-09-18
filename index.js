@@ -4,6 +4,8 @@ client.config = require('./config.json')
 client.error = require('./utils/error.js')
 client.sql = require('./utils/sql.js')
 
+client.roles = require('./utils/roles.js')
+
 client.xp = require('./utils/xp.js')
 client.xpEarnt = {}
 
