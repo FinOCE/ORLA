@@ -1,10 +1,21 @@
 module.exports = (client, message) => {
+    const moment = require('moment-timezone')
+
     // Don't run if message is sent by bot, or doesn't start with the prefix
     if (message.author.bot) return
 
     // Give xp where applicable
-    client.xp.addXP(message)
+    if (!(message.author.id in client.xpEarnt)) {
+        client.xpEarnt[message.author.id] = moment().unix() + 60
 
+        client.xp.addXP(message)
+
+        client.setTimeout(_ => {
+            delete client.xpEarnt[message.author.id]
+        }, 60000)
+    }
+
+    // Check if message is a command
     if (!message.content.startsWith(client.config.prefix)) return
 
     const args = message.content.slice(client.config.prefix.length).split(/ +/)
