@@ -1,5 +1,5 @@
 module.exports = {
-	desc: 'checks rocket league rank stats',
+	desc: 'checks Rocket League rank stats',
 	syntax: '[platform] [account]',
 	async run(message, args) {
 		const Discord = require('discord.js')
@@ -75,7 +75,7 @@ module.exports = {
 					.setFooter(`ORLA - Requested by ${message.author.tag}`, message.client.config.logo)
 					.setTitle(`RL Stats: ${player.user.name}`)
 					.setURL(player.user.statsURL)
-                    .setThumbnail(player.user.avatarURL)
+					.setThumbnail(player.user.avatarURL)
 				
 				let totalModes = 0
 				let topRank = false
