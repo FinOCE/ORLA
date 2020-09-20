@@ -15,7 +15,7 @@ module.exports = (method, message) => {
             "description": `To check the correct syntax, please type \`${prefix}help [command]\``
         },
 
-        // .rlrank
+        // rlrank and rlsetup
         "notLinked": {
             "title": "Account Not Linked",
             "description": `To link your account, please use the command \`${prefix}rlsetup [platform (pc/xbox/ps)] [account]\``
@@ -30,7 +30,7 @@ module.exports = (method, message) => {
         },
         "noPlayerSpecified": {
             "title": "No Player Specified",
-            "description": `To use this command, you need to specify an account following the syntax \`${prefix}rlrank [platform] [account]\``
+            "description": 'To use this command, you need to specify the platform and account.'
         }
     }
 
