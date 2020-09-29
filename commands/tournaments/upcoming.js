@@ -54,6 +54,8 @@ module.exports = {
             }
         }
 
+        if (!(0 in events)) Embed.setDescription('Unfortunately no events have been announced yet. Please check again later.')
+
         message.channel.send(Embed)
     }
 }

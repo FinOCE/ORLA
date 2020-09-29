@@ -48,6 +48,8 @@ module.exports = async (client) => {
                 Embed.addField(`${icon} **__${event.title}__**`, content)
             }
         }
+
+        if (!(0 in events)) Embed.setDescription('Unfortunately no events have been announced yet. Please check again later.')
         
         client.channels.cache.get(client.servers[id].upcoming).messages.fetch(client.servers[id].message).then(msg => msg.edit(Embed))
     }

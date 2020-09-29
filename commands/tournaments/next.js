@@ -50,6 +50,15 @@ module.exports = {
                         +`\nTournament Starts: ${moment.unix(event.ttime).tz(timezone).format('h:mma z')}\n\`\`\``)
                 message.channel.send(Embed)
             }
+        } else {
+            const Embed = new Discord.MessageEmbed()
+                .setColor(message.client.config.color)
+                .setTitle('Next Tournament')
+                .setURL('https://orla.pro')
+                .setDescription('Unfortunately no events have been announced yet. Please check again later.')
+                .setFooter(`ORLA - Requested by ${message.author.tag}`, message.client.config.logo)
+            
+            message.channel.send(Embed)
         }
     }
 }
