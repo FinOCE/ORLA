@@ -13,11 +13,11 @@ module.exports = async (client) => {
         
         if (client.hosts[event.host] !== undefined) {
             for (const id of Object.keys(client.servers)) {
-                data['color'] = (message.client.hosts[event.host].color !== null) ? message.client.hosts[event.host].color : message.client.config.color
-                data['logo'] = (message.client.hosts[event.host].log !== null) ? message.client.hosts[event.host].logo : defaultImage
-                if (message.client.hosts[event.host].series !== null) {
-                    data['series'] = message.client.hosts[event.host].series[event.series].title
-                    data['seriesImage'] = `https://orla.pro/assets/series/${message.client.hosts[event.host].series[event.series].image}.png`
+                data['color'] = (client.hosts[event.host].color !== null) ? client.hosts[event.host].color : client.config.color
+                data['logo'] = (client.hosts[event.host].log !== null) ? client.hosts[event.host].logo : defaultImage
+                if (client.hosts[event.host].series !== null) {
+                    data['series'] = client.hosts[event.host].series[event.series].title
+                    data['seriesImage'] = `https://orla.pro/assets/series/${client.hosts[event.host].series[event.series].image}.png`
                 }
 
                 const topen = (event.topen === 1) ? '' : '\n\n⚠️ ***Registration requires an invite***'
