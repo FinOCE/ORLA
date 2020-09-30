@@ -1,4 +1,14 @@
 module.exports = {
+    async giveXP(message, xp) {
+        const users = await message.client.sql('SELECT * FROM `users` WHERE `id`="'+message.mentions.members.first().user.id+'"')
+        if (0 in users) {
+            await message.client.sql('UPDATE `users` SET `xp`=`xp`+'+xp+' WHERE `id`="'+message.mentions.members.first().user.id+'"')
+
+            const newXP = Number(users[0].xp) + Number(xp)
+            return newXP
+        }
+    },
+    async getXP(message) {},
     async addXP(message) {
         const xp = Math.floor(Math.random()*11 + 15)
         const users = await message.client.sql('SELECT * FROM `users` WHERE `id`="'+message.author.id+'"')
@@ -9,8 +19,6 @@ module.exports = {
             await message.client.sql('INSERT INTO `users` (`id`, `xp`) VALUES ("'+message.author.id+'", '+xp+')')
         }
     },
-    async takeXP(message, xp) {},
-    async getXP(message) {},
     async giveRole(message) {
         const users = await message.client.sql('SELECT * FROM `users` WHERE `id`="'+message.author.id+'"')
 
