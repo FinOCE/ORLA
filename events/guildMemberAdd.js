@@ -1,4 +1,4 @@
-module.exports = (member) => {
+module.exports = (client, member) => {
     //member.roles.add(client.config.COMMUNITY)
     //member.roles.add(client.config.ALPHA)
     for (const i in client.servers[member.guild].autorole) {
