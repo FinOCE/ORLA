@@ -1,14 +1,24 @@
 module.exports = {
     async giveXP(message, xp) {
-        const users = await message.client.sql('SELECT * FROM `users` WHERE `id`="'+message.mentions.members.first().user.id+'"')
-        if (0 in users) {
+        const user = await message.client.sql('SELECT * FROM `users` WHERE `id`="'+message.mentions.members.first().user.id+'"')
+        if (0 in user) {
             await message.client.sql('UPDATE `users` SET `xp`=`xp`+'+xp+' WHERE `id`="'+message.mentions.members.first().user.id+'"')
 
-            const newXP = Number(users[0].xp) + Number(xp)
+            const newXP = Number(user[0].xp) + Number(xp)
             return newXP
         }
     },
-    async getXP(message) {},
+    async getXP(message) {
+        const member = (message.mentions.members.first()) ? message.mentions.members.first() : message.member
+
+        const users = await message.client.sql('SELECT * FROM `users` WHERE `id`="'+member.user.id+'"')
+        const user = users[0]
+
+        const positionCounter = await message.client.sql('SELECT * FROM `users` WHERE `xp`>'+user.xp)
+        const position = positionCounter.length + 1
+
+        return [(user) ? user : false, this.getLevel(user.xp), position]
+    },
     async addXP(message) {
         const xp = Math.floor(Math.random()*11 + 15)
         const users = await message.client.sql('SELECT * FROM `users` WHERE `id`="'+message.author.id+'"')
