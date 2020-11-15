@@ -21,12 +21,4 @@ module.exports = async (client) => {
 
         return update
     }(), client.config.timeout * 1000)
-
-    /*
-    // TODO: Add automation for announcing and notifying
-    const {Event} = require('../utils/Event')
-    const sql = await client.sql('SELECT * FROM `tournaments` WHERE `title`="RLO 2v2 198"')
-    const event = await Event.build(client, sql)
-    event.announce(client)
-    */
 }
