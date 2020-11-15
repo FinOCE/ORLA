@@ -3,27 +3,22 @@ module.exports = async (client) => {
     console.log('Bot is now online')
     client.user.setActivity('orla.pro | .help', { type: 'WATCHING' })
 
-    // Functions to execute
-    const announcements = require('../utils/announcements.js')
-    const notifications = require('../utils/notifications.js')
-    const upcoming = require('../utils/upcoming.js')
-
     // Execute functions on an interval
     client.setInterval(function update() {
-        const hosts = require('../utils/hosts.js')
-        const servers = require('../utils/servers.js')
-
-        // Update hosts and servers and run announce/notify/update
-        new Promise(async (resolve, reject) => {
-            client.hosts = await hosts(client)
+        // Update server list
+        (async () => {
+            const servers = require('../utils/servers')
             client.servers = await servers(client)
-            resolve(client)
-        }).then(client => {
-            announcements(client)
-            notifications(client)
-            upcoming(client)
-        })
+        })()
 
         return update
     }(), client.config.timeout * 1000)
+
+    /*
+    // TODO: Add automation for announcing and notifying
+    const {Event} = require('../utils/Event')
+    const sql = await client.sql('SELECT * FROM `tournaments` WHERE `title`="RLO 2v2 198"')
+    const event = await Event.build(client, sql)
+    event.announce(client)
+    */
 }
