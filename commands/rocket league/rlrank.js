@@ -16,10 +16,10 @@ module.exports = {
 			const userSQL = await message.client.sql('SELECT * FROM `users` WHERE `id`="'+message.author.id+'"')
 			const user = userSQL[0]
 
-			if (user.account !== null) {
+			if (user.main !== null) {
 				// if account is linked
-				accountInfo['platform'] = user.platform
-				accountInfo['account'] = user.account
+				accountInfo['platform'] = user.main
+				accountInfo['account'] = user[user.main]
 				accountInfo['isReal'] = true
 			} else {
 				// if account is not linked
@@ -33,10 +33,10 @@ module.exports = {
 				const userSQL = await message.client.sql('SELECT * FROM `users` WHERE `id`="'+message.mentions.members.first().user.id+'"')
 				const user = userSQL[0]
 
-				if (user.account !== null) {
+				if (user.main !== null) {
 					// if account is linked
-					accountInfo['platform'] = user.platform
-					accountInfo['account'] = user.account
+					accountInfo['platform'] = user.main
+					accountInfo['account'] = user[user.main]
 				} else {
 					// if account is not linked
 					message.client.error('notLinkedOther', message)
@@ -58,18 +58,16 @@ module.exports = {
 				accountInfo['account'] = args[1]
 			}
 		}
+		const platforms = {steam: 'steam', pc: 'steam', xbox: 'xbl', ps: 'psn'}
+        accountInfo['platform'] = platforms[accountInfo['platform']]
 
 		const loading = message.guild.emojis.cache.find(emoji => emoji.name === 'd_loading')
 
 		message.channel.send(`${loading} Getting rank...`).then(async msg => {
-			// Don't bother looking for stats.js, its in the .gitignore
-			const stats = require('../../utils/stats.js')
+			const {Stat} = require('../../utils/Stat')
+			const player = await Stat.build(message.client, accountInfo['platform'], accountInfo['account'])
 
-			const playerRaw = await stats(accountInfo['platform'], accountInfo['account'])
-
-			if (playerRaw !== null) {
-				const player = JSON.parse(playerRaw)
-				
+			if (player.valid) {
 				const Embed = new Discord.MessageEmbed()
 					.setColor(message.client.config.color)
 					.setFooter(`ORLA - Requested by ${message.author.tag}`, message.client.config.logo)
@@ -78,43 +76,38 @@ module.exports = {
 					.setThumbnail(player.user.avatarURL)
 				
 				let totalModes = 0
-				let topRank = false
 				for (const i in player.modes) {
 					let mode = player.modes[i]
 					
-					if (mode.name !== 'SoloStandard') {
-						const ranksList = ['Unranked','BronzeI','BronzeII','BronzeIII','SilverI','SilverII','SilverIII','GoldI','GoldII','GoldIII','PlatinumI','PlatinumII','PlatinumIII','DiamondI','DiamondII','DiamondIII','ChampionI','ChampionII','ChampionIII','GrandChampion']
-						const ranksEmoji = ['00_unranked','01_bronze1','02_bronze2','03_bronze3','04_silver1','05_silver2','06_silver3','07_gold1','08_gold2','09_gold3','10_plat1','11_plat2','12_plat3','13_diamond1','14_diamond2','15_diamond3','16_champion1','17_champion2','18_champion3','19_grandchampion']
-						let emote = ''
-						for (x = 0; x < ranksList.length; x++) {
-							if (mode.rank.replace(' ','') == ranksList[x]) {
-								emote = message.guild.emojis.cache.find(emoji => emoji.name === ranksEmoji[x])
-							}
+					const ranksList = ['Unranked','BronzeI','BronzeII','BronzeIII','SilverI','SilverII','SilverIII','GoldI','GoldII','GoldIII','PlatinumI','PlatinumII','PlatinumIII','DiamondI','DiamondII','DiamondIII','ChampionI','ChampionII','ChampionIII','GrandChampionI','GrandChampionII','GrandChampionIII','SupersonicLegend']
+					const ranksEmoji = ['00_unranked','01_bronze1','02_bronze2','03_bronze3','04_silver1','05_silver2','06_silver3','07_gold1','08_gold2','09_gold3','10_plat1','11_plat2','12_plat3','13_diamond1','14_diamond2','15_diamond3','16_champion1','17_champion2','18_champion3','19_grandchampion1','20_grandchampion2','21_grandchampion3','22_supersoniclegend']
+					let emote = ''
+					for (x = 0; x < ranksList.length; x++) {
+						console.log(mode.rank.replace(/ /g,''), ranksList[x])
+						if (mode.rank.replace(/ /g,'') == ranksList[x]) {
+							emote = message.guild.emojis.cache.find(emoji => emoji.name === ranksEmoji[x])
 						}
-						
-						d_up = message.guild.emojis.cache.find(emoji => emoji.name === 'd_up')
-						d_down = message.guild.emojis.cache.find(emoji => emoji.name === 'd_down')
-						
-						const rank = ((mode.rank === 'Grand Champion') || (mode.rank === 'Unranked')) ? `${emote} (${mode.mmr})` : `${emote} Div ${mode.division} (${mode.mmr})`
-						
-						let mmr = ''
-						if (mode.rank === 'Grand Champion') {
-							mmr = (mode.down !== undefined) ? `${d_down} ${mode.down}` : ''
-						} else {
-							mmr = ((mode.rank === 'Unranked') || (mode.down === undefined) || (mode.up === undefined)) ? '' : `${d_up} ${mode.up} ${d_down} ${mode.down}`
-						}
-						
-						const streak = (mode.streak > 0) ? `🔥 ${mode.streak}` : `❄️ ${String(mode.streak).replace('-','')}`
-						const games = (mode.name === 'Casual') ? '' : `🕐 ${mode.games} - ${streak}`
-						
-						const position = `(Top ${Math.floor((100 - mode.percentile)*10)/10}%)`
-						
-						Embed.addField(`__${mode.name}__ *${position}*`, `${rank}\n${mmr}\n${games}`, true)
-						
-						totalModes += 1
-						
-						topRank = (mode.rankValue > topRank) ? mode.rankValue : topRank
 					}
+					
+					d_up = message.guild.emojis.cache.find(emoji => emoji.name === 'd_up')
+					d_down = message.guild.emojis.cache.find(emoji => emoji.name === 'd_down')
+					
+					const rank = ((mode.rank === 'Supersonic Legend') || (mode.rank === 'Unranked')) ? `${emote} (${mode.mmr})` : `${emote} Div ${mode.division} (${mode.mmr})`
+					
+					let mmr = ''
+					if (mode.rank === 'Supersonic Legend') {
+						mmr = (mode.down !== undefined) ? `${d_down} ${mode.down}` : ''
+					} else {
+						mmr = ((mode.rank === 'Unranked') || (mode.down === undefined) || (mode.up === undefined)) ? '' : `${d_up} ${mode.up} ${d_down} ${mode.down}`
+					}
+					
+					const streak = (mode.streak > 0) ? `🔥 ${mode.streak}` : `❄️ ${String(mode.streak).replace('-','')}`
+					const games = (mode.name === 'Casual') ? '' : `🕐 ${mode.games} - ${streak}`
+					const position = (mode.overall >= 1000) ? `${Math.floor((100 - mode.percentile)*10)/10}%` : `#${mode.overall}`
+					
+					Embed.addField(`__${mode.name}__ *(${position})*`, `${rank}\n${mmr}\n${games}`, true)
+					
+					totalModes += 1
 				}
 				
 				while (totalModes % 3 !== 0) {
@@ -124,18 +117,17 @@ module.exports = {
 
 				msg.edit(' ', Embed)
 
-				if (topRank !== false && accountInfo['isReal'] === true) {
-					const rankIDSQL = await message.client.sql('SELECT * FROM `servers` WHERE `id`="'+message.channel.guild.id+'"')
-					const rankID = JSON.parse(rankIDSQL[0].ranks)
+				if (accountInfo['isReal'] === true) {
+					const rankIDSQL = await message.client.sql('SELECT `rankroles` FROM `servers` WHERE `id`="'+message.channel.guild.id+'"')
+					const rankID = JSON.parse(rankIDSQL[0].rankroles)
 					
 					if (rankID !== null) {
-						for (rankNum in rankID) {
-							if (message.member.roles.cache.some(role => role.id === rankID[rankNum])) {
-								message.member.roles.remove(rankID[rankNum])
+						for (i in rankID) {
+							if (message.member.roles.cache.some(role => role.id === rankID[i])) {
+								message.member.roles.remove(rankID[i])
 							}
 						}
-						
-						message.member.roles.add(rankID[topRank])
+						message.member.roles.add(rankID[player.highestRank().value-1])
 					}
 				}
 			} else {
