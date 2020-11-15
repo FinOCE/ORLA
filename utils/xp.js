@@ -30,17 +30,18 @@ module.exports = {
         }
     },
     async giveRole(message) {
-        const users = await message.client.sql('SELECT * FROM `users` WHERE `id`="'+message.author.id+'"')
+        let {xproles} = await message.client.sql('SELECT `xproles` FROM `servers` WHERE `id`="'+message.guild.id+'"')
+        if (xproles !== null && xproles !== undefined) {
+            roles = JSON.parse(xproles)
 
-        const level = this.getLevel(users[0].xp)[0]
-        
-        let roles = await message.client.sql('SELECT * FROM `servers` WHERE `id`="'+message.guild.id+'"')
-        roles = JSON.parse(roles[0].xprole)
+            const users = await message.client.sql('SELECT * FROM `users` WHERE `id`="'+message.author.id+'"')
+            const level = this.getLevel(users[0].xp)[0]
 
-        for (i = 0; i < Object.keys(roles).length; i++) {
-            if ((level >= Object.keys(roles)[i]) && (level < Object.keys(roles)[i+1])) {
-                message.member.roles.add(roles[Object.keys(roles)[i]])
-                if (i != 0) message.member.roles.remove(roles[Object.keys(roles)[i-1]])
+            for (i = 0; i < Object.keys(roles).length; i++) {
+                if ((level >= Object.keys(roles)[i]) && (level < Object.keys(roles)[i+1])) {
+                    message.member.roles.add(roles[Object.keys(roles)[i]])
+                    if (i != 0) message.member.roles.remove(roles[Object.keys(roles)[i-1]])
+                }
             }
         }
     },
