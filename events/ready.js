@@ -5,10 +5,18 @@ module.exports = async (client) => {
 
     // Execute functions on an interval
     client.setInterval(function update() {
-        // Update server list
+        // Create server list
         (async () => {
-            const servers = require('../utils/servers')
-            client.servers = await servers(client)
+            const serverSQL = await client.sql('SELECT * FROM `servers`')
+
+            const servers = {}
+            for (const server of serverSQL) {
+                servers[server.id] = server
+                servers[server.id].upcoming = JSON.parse(server.upcoming)
+                servers[server.id].autorole = JSON.parse(server.autorole)
+            }
+
+            client.servers = servers
         })()
 
         return update
