@@ -8,6 +8,7 @@ client.roles = require('./utils/roles.js')
 
 client.xp = require('./utils/xp.js')
 client.xpEarnt = {}
+client.xpEarntVC = {}
 
 require('dotenv').config()
 
