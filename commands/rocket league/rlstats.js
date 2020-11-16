@@ -16,10 +16,10 @@ module.exports = {
 			const userSQL = await message.client.sql('SELECT * FROM `users` WHERE `id`="'+message.author.id+'"')
 			const user = userSQL[0]
 
-			if (user.account !== null) {
+			if (user.main !== null) {
 				// if account is linked
-				accountInfo['platform'] = user.platform
-				accountInfo['account'] = user.account
+				accountInfo['platform'] = user.main
+				accountInfo['account'] = user[user.main]
 				accountInfo['isReal'] = true
 			} else {
 				// if account is not linked
@@ -33,10 +33,10 @@ module.exports = {
 				const userSQL = await message.client.sql('SELECT * FROM `users` WHERE `id`="'+message.mentions.members.first().user.id+'"')
 				const user = userSQL[0]
 
-				if (user.account !== null) {
+				if (user.main !== null) {
 					// if account is linked
-					accountInfo['platform'] = user.platform
-					accountInfo['account'] = user.account
+					accountInfo['platform'] = user.main
+					accountInfo['account'] = user[user.main]
 				} else {
 					// if account is not linked
 					message.client.error('notLinkedOther', message)
@@ -58,27 +58,24 @@ module.exports = {
 				accountInfo['account'] = args[1]
 			}
 		}
-
+		const platforms = {steam: 'steam', pc: 'steam', xbox: 'xbl', ps: 'psn'}
+		accountInfo['platform'] = platforms[accountInfo['platform']]
+		
 		const loading = message.guild.emojis.cache.find(emoji => emoji.name === 'd_loading')
 
 		message.channel.send(`${loading} Getting stats...`).then(async msg => {
 			// Don't bother looking for stats.js, its in the .gitignore
-			const stats = require('../../utils/stats.js')
+			const {Stat} = require('../../utils/Stat')
+			const player = await Stat.build(message.client, accountInfo['platform'], accountInfo['account'])
 
-			const playerRaw = await stats(accountInfo['platform'], accountInfo['account'])
-
-			if (playerRaw !== null) {
-				const player = JSON.parse(playerRaw)
-				
+			if (player.valid) {
 				const Embed = new Discord.MessageEmbed()
 					.setColor(message.client.config.color)
 					.setFooter(`ORLA - Requested by ${message.author.tag}`, message.client.config.logo)
 					.setTitle(`RL Stats: ${player.user.name}`)
 					.setURL(player.user.statsURL)
 					.setThumbnail(player.user.avatarURL)
-				
-				let totalModes = 0
-				let topRank = false
+
 				for (let i = 0; i < Object.keys(player.stats).length-1; i++) {
 					let stat = player.stats[Object.keys(player.stats)[i]]
 					
