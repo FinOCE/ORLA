@@ -19,14 +19,14 @@ module.exports = {
 
         return [(user) ? user : false, this.getLevel(user.xp), position]
     },
-    async addXP(message) {
-        const xp = Math.floor(Math.random()*11 + 15)
-        const users = await message.client.sql('SELECT * FROM `users` WHERE `id`="'+message.author.id+'"')
+    async addXP(message, id, multiplier, addition) {
+        const xp = Math.floor(Math.random()*multiplier + addition)
+        const users = await message.client.sql('SELECT * FROM `users` WHERE `id`="'+id+'"')
         if (0 in users) {
-            await message.client.sql('UPDATE `users` SET `xp`=`xp`+'+xp+' WHERE `id`="'+message.author.id+'"')
+            await message.client.sql('UPDATE `users` SET `xp`=`xp`+'+xp+' WHERE `id`="'+id+'"')
             this.giveRole(message)
         } else {
-            await message.client.sql('INSERT INTO `users` (`id`, `xp`) VALUES ("'+message.author.id+'", '+xp+')')
+            await message.client.sql('INSERT INTO `users` (`id`, `xp`) VALUES ("'+id+'", '+xp+')')
         }
     },
     async giveRole(message) {

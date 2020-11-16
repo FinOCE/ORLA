@@ -8,7 +8,7 @@ module.exports = (client, message) => {
     if (!(message.author.id in client.xpEarnt)) {
         client.xpEarnt[message.author.id] = moment().unix() + 60
 
-        client.xp.addXP(message)
+        client.xp.addXP(message, message.author.id, 11, 15)
 
         client.setTimeout(_ => {
             delete client.xpEarnt[message.author.id]
