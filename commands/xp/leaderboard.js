@@ -6,7 +6,7 @@ module.exports = {
 
 		const page = (0 in args && !isNaN(args[0]) && args[0] > 0) ? args[0]-1 : 0
 
-		const users = await message.client.sql('SELECT * FROM `users`')
+		const users = (await message.client.query('SELECT * FROM `users`')).getAll()
 		users.sort((a, b) => {return b.xp - a.xp})
 
 		const Embed = new Discord.MessageEmbed()
@@ -18,7 +18,7 @@ module.exports = {
 
 		let range = (users.length - page * 10 < 10) ? users.length - page * 10 : 10
 		for (let x = 0; x < range; x++) {
-			list += `**#${page * 10 + x}** <@${users[page*10+x].id}> - Level **${message.client.xp.getLevel(users[page*10+x].xp)[0]}** (**${users[page*10+x].xp}**)\n`
+			list += `**#${page * 10 + x + 1}** <@${users[page*10+x].id}> - Level **${message.client.xp.getLevel(users[page*10+x].xp)[0]}** (**${users[page*10+x].xp}**)\n`
 		}
 
 		Embed.setDescription(`Page **${page + 1}** of **${Math.ceil(users.length/10)}**\n\n${list}`)
