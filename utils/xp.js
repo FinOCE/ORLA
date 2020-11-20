@@ -11,7 +11,7 @@ module.exports = {
     async getXP(message) {
         const member = (message.mentions.members.first()) ? message.mentions.members.first() : message.member
 
-        const users = await message.client.sql('SELECT * FROM `users` WHERE `id`="'+member.user.id+'"')
+        const users = await message.client.sql('SELECT * FROM `users` WHERE `id`="'+member.user.id+'2"')
         const user = users[0]
 
         const positionCounter = await message.client.sql('SELECT * FROM `users` WHERE `xp`>'+user.xp)
