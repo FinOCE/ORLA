@@ -2,6 +2,9 @@ module.exports = {
 	desc: 'uploads tournament to the system',
 	syntax: '',
 	async run(message, args) {
+		const Discord = require('discord.js')
+		const moment = require('moment-timezone')
+
 		const {Event} = require('../../utils/Event')
 		const event = new Event()
 		
@@ -38,11 +41,11 @@ module.exports = {
 			if (Object.keys(seriesToCheck).length + hostsToCheck.length > 1) {
 				let list = ''
 				for (let i = 0; i < Object.keys(seriesToCheck).length; i++) {
-					list += `${i+1}. ${Object.keys(seriesToCheck)[i]} (series)\n`
+					list += `**${i+1}.** \`${Object.keys(seriesToCheck)[i]}\` (series)\n`
 				}
 				const seriesLength = list.split('\n').length
 				for (let i = 0; i < hostsToCheck.length; i++) {
-					list += `${i+seriesLength}. ${hostsToCheck[i].name} (host)\n`
+					list += `**${i+seriesLength}.** \`${hostsToCheck[i].name}\` (host)\n`
 				}
 
 				let validSelection = false
@@ -87,17 +90,41 @@ module.exports = {
 		event.open = (open.toLowerCase().includes('y')) ? true : false
 
 		// ----- START TIME -----
-		validStartTime = false
+		let validStartTime = false
 		while (validStartTime == false) {
-			startTime = await event.query(message, 'When does the event start? (format: D-M hh:mm, e.g. 16-3 18:00')
-			// TODO: convert to unix before setting
+			startTime = await event.query(message, 'When does the event start? *(format like: 16-3 18:00 +11)*')
+			if (/\d+\/\d+\s\d+:\d{2}\s\+\d{2}/.test(startTime)) {
+				validStartTime = true
+				const time = {
+					month: startTime.split('/')[1].split(' ')[0]-1,
+					day: startTime.split('/')[0],
+					hour: startTime.split(' ')[1].split(':')[0],
+					minutes: startTime.split(':')[1].split(' ')[0]
+				}
+				const tz = startTime.split(' ')[2].replace('+', '')
+				event.startTime = moment(time).utcOffset(tz).utc().unix()
+			} else {
+				message.channel.send('Sorry, but that time is not formatted correctly. Please try again.')
+			}
 		}
 
 		// ----- REGISTRATION TIME -----
-		validRegistrationTime = false
+		let validRegistrationTime = false
 		while (validRegistrationTime == false) {
-			registrationTime = await event.query(message, 'When does registration close? (format: D-M hh:mm, e.g. 16-3 18:00')
-			// TODO: copy valid conversion code from startTime part
+			registrationTime = await event.query(message, 'When does registration close? *(format like: 16-3 18:00 +11)*')
+			if (/\d+\/\d+\s\d+:\d{2}\s\+\d{2}/.test(startTime)) {
+				validRegistrationTime = true
+				const time = {
+					month: startTime.split('/')[1].split(' ')[0]-1,
+					day: startTime.split('/')[0],
+					hour: startTime.split(' ')[1].split(':')[0],
+					minutes: startTime.split(':')[1].split(' ')[0]
+				}
+				const tz = startTime.split(' ')[2].replace('+', '')
+				event.startTime = moment(time).utcOffset(tz).utc().unix()
+			} else {
+				message.channel.send('Sorry, but that time is not formatted correctly. Please try again.')
+			}
 		}
 
 		// TODO: confirmation and upload
