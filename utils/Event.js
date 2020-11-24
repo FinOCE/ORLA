@@ -1,6 +1,6 @@
 module.exports.Event = class Event {
     // ----- Setup -----
-    constructor(client, json) {
+    constructor(client, json={}) {
         this.client = client
         Object.keys(json).forEach(p => this[p] = json[p])
     }
@@ -111,5 +111,24 @@ module.exports.Event = class Event {
         })
 
         client.sql('UPDATE `tournaments` SET `reminded`=1 WHERE `title`="'+this.name+'"')
+    }
+    async query(message, question) {
+        if (this.cancelled !== false) {
+            return new Promise((resolve, reject) => {
+                message.channel.send(question)
+
+                const collecter = message.channel.createMessageCollector(m => m.author.id === message.author.id, {time: 300000})
+                collecter.on('collect', m => {
+                    collecter.stop()
+
+                    if (m.content === '.cancel') {
+                        this.cancelled = true
+                        return
+                    }
+
+                    resolve(m.content)
+                })
+            })
+        }
     }
 }
