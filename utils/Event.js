@@ -115,7 +115,7 @@ module.exports.Event = class Event {
     async query(message, question) {
         if (this.cancelled !== false) {
             return new Promise((resolve, reject) => {
-                message.channel.send(question)
+                if (question) message.channel.send(question)
 
                 const collecter = message.channel.createMessageCollector(m => m.author.id === message.author.id, {time: 300000})
                 collecter.on('collect', m => {
