@@ -123,6 +123,7 @@ module.exports.Event = class Event {
 
                     if (m.content === '.cancel') {
                         this.cancelled = true
+                        message.channel.send('Upload cancelled.')
                         return
                     }
 
