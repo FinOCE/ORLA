@@ -83,7 +83,6 @@ module.exports = {
 					const ranksEmoji = ['00_unranked','01_bronze1','02_bronze2','03_bronze3','04_silver1','05_silver2','06_silver3','07_gold1','08_gold2','09_gold3','10_plat1','11_plat2','12_plat3','13_diamond1','14_diamond2','15_diamond3','16_champion1','17_champion2','18_champion3','19_grandchampion1','20_grandchampion2','21_grandchampion3','22_supersoniclegend']
 					let emote = ''
 					for (x = 0; x < ranksList.length; x++) {
-						console.log(mode.rank.replace(/ /g,''), ranksList[x])
 						if (mode.rank.replace(/ /g,'') == ranksList[x]) {
 							emote = message.guild.emojis.cache.find(emoji => emoji.name === ranksEmoji[x])
 						}
