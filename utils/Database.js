@@ -24,16 +24,18 @@ module.exports.Database = class Database {
         const type = query.split(/ +/)[0].toLowerCase()
     
         let response = await sequelize.query(query, { type: QueryType[type], logging: false })
-        let json = []
-        if (query.split(/ +/g)[1] !== '*') {
-            response.forEach(row => {
-                json.push(row[query.split(/ +/g)[1].replace(/`/g, '')])
-            })
-        } else {
-            json = response
-        }
+        if (type === 'select') {
+            let json = []
+            if (query.split(/ +/g)[1] !== '*') {
+                response.forEach(row => {
+                    json.push(row[query.split(/ +/g)[1].replace(/`/g, '')])
+                })
+            } else {
+                json = response
+            }
 
-        return new Database(json)
+            return new Database(json)
+        }
     }
 
     // ----- Queries -----
