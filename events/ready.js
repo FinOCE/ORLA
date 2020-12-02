@@ -38,15 +38,17 @@ module.exports = async (client) => {
                     .setFooter('Last Updated')
                     .setTimestamp()
                 
-                const events = await client.query('SELECT * FROM `tournaments` WHERE `ttime`>'+(moment().unix()-86400*21))
+                const events = await client.query('SELECT * FROM `tournaments` WHERE `ttime`>'+(moment().unix()))
                 events.getAll().sort((a, b) => {return a.ttime - b.ttime})
                 events.getAll().forEach(async eventData => {
                     const icon = client.emojis.cache.get(client.hosts.find(host => host.name === event.host.code).emoji)
-                    
+
                     const {Event} = require('../utils/Event')
                     const event = await Event.build(client, [eventData])
                     Embed.addField(event.getUpcomingTitle(icon), event.getUpcomingMessage(server))
                 })
+
+                if (events.getAll().length === 0) Embed.setDescription('Unfortunately no events have been announced yet.')
 
                 client.channels.cache.get(server.upcoming.channelID).messages.fetch(server.upcoming.messageID).then(msg => msg.edit(Embed))
             })

@@ -60,7 +60,7 @@ module.exports.Event = class Event {
         return '​'
             +`    [Registration Page](${this.customURL})${stream}\n\n`
             +`    Event Starts: **${moment.unix(this.startTime).tz(server.timezone).format('dddd Do MMMM h:mma')}**\n`
-            +`    Rego Closes: **${moment.unix(this.registrationTime).tz(server.timezone).format('h:mma')}** (*${moment.duration(Math.round(this.registrationTime - moment().unix() + 86400*21), "seconds").format('D[d] H[hr] m[min]')}*)\n`
+            +`    Rego Closes: **${moment.unix(this.registrationTime).tz(server.timezone).format('h:mma')}** (*${moment.duration(Math.round(this.registrationTime - moment().unix()), "seconds").format('D[d] H[hr] m[min]')}*)\n`
             +`    Format: **${this.mode}**\n`
             +`    Prize: **${this.prize}**\n`
     }
