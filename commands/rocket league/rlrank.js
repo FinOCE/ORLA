@@ -1,6 +1,7 @@
 module.exports = {
 	desc: 'checks Rocket League rank stats',
 	syntax: '[platform] [account]',
+	onlyORLA: true,
 	async run(message, args) {
 		const Discord = require('discord.js')
 		const moment = require('moment-timezone')

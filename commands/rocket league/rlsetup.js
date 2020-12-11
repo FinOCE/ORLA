@@ -1,6 +1,7 @@
 module.exports = {
 	desc: 'links Discord account with RL account',
 	syntax: '[platform]* [account]*',
+	onlyORLA: true,
 	async run(message, args) {
 		const Discord = require('discord.js')
 

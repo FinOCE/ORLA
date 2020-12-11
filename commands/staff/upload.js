@@ -1,6 +1,7 @@
 module.exports = {
 	desc: 'uploads tournament to the system',
 	syntax: '',
+	onlyORLA: true,
 	async run(message, args) {
 		const Discord = require('discord.js')
 		const moment = require('moment-timezone')

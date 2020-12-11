@@ -1,6 +1,7 @@
 module.exports = {
 	desc: 'give or take a user\'s XP',
 	syntax: '[@user]* [amount]*',
+	onlyORLA: true,
 	async run(message, args) {
 		const Discord = require('discord.js')
 

@@ -1,6 +1,7 @@
 module.exports = {
 	desc: 'shows Discord XP leaderboard',
 	syntax: '[page]',
+	onlyORLA: true,
 	async run(message, args) {
 		const Discord = require('discord.js')
 

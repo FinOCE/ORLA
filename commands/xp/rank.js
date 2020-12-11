@@ -1,8 +1,7 @@
-const { DiscordAPIError } = require("discord.js")
-
 module.exports = {
 	desc: 'checks Discord XP stats',
 	syntax: '[@user]',
+	onlyORLA: true,
 	async run(message, args) {
 		const Discord = require('discord.js')
 
