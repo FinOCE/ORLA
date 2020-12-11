@@ -14,6 +14,10 @@ module.exports = (method, message) => {
             "title": "Invalid Syntax",
             "description": `To check the correct syntax, please type \`${prefix}help [command]\``
         },
+        "notMainServer": {
+            "title": "Command not Available",
+            "description": "Sorry, but that command is not available on this server."
+        },
 
         // rlrank and rlsetup
         "notLinked": {

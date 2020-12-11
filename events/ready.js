@@ -32,28 +32,29 @@ module.exports = async (client) => {
 
                 Object.keys(client.servers).forEach(async i => {
                     const server = client.servers[i]
+                    if (server.upcoming !== null) {
+                        const hours = Math.floor(moment.tz(server.timezone).utcOffset() / 60)
+                        const minutes = (moment.tz(server.timezone).utcOffset() % 60 > 0) ? `:${moment.tz(server.timezone).utcOffset() % 60}` : ''
+                        const offset = (hours >= 0) ? `+${hours}${minutes}` : `${hours}${minutes}`
 
-                    const hours = Math.floor(moment.tz(server.timezone).utcOffset() / 60)
-                    const minutes = (moment.tz(server.timezone).utcOffset() % 60 > 0) ? `:${moment.tz(server.timezone).utcOffset() % 60}` : ''
-                    const offset = (hours >= 0) ? `+${hours}${minutes}` : `${hours}${minutes}`
-
-                    const Embed = new Discord.MessageEmbed()
-                        .setColor(client.config.color)
-                        .setTitle(`**Upcoming Tournaments - ${moment.tz(server.timezone).format('z')} (${offset})**`)
-                        .setURL('https://orla.pro')
-                        .setFooter('Last Updated')
-                        .setTimestamp()
-                    
-                    events.getAll().forEach(async eventData => {
-                        const event = await Event.build(client, [eventData])
+                        const Embed = new Discord.MessageEmbed()
+                            .setColor(client.config.color)
+                            .setTitle(`**Upcoming Tournaments - ${moment.tz(server.timezone).format('z')} (${offset})**`)
+                            .setURL('https://orla.pro')
+                            .setFooter('Last Updated')
+                            .setTimestamp()
                         
-                        const icon = client.emojis.cache.get(client.hosts.find(host => host.name === event.host.code).emoji)
-                        Embed.addField(event.getUpcomingTitle(icon), event.getUpcomingMessage(server))
-                    })
+                        events.getAll().forEach(async eventData => {
+                            const event = await Event.build(client, [eventData])
+                            
+                            const icon = client.emojis.cache.get(client.hosts.find(host => host.name === event.host.code).emoji)
+                            Embed.addField(event.getUpcomingTitle(icon), event.getUpcomingMessage(server))
+                        })
 
-                    if (events.getAll().length === 0) Embed.setDescription('Unfortunately no events have been announced yet.')
+                        if (events.getAll().length === 0) Embed.setDescription('Unfortunately no events have been announced yet.')
 
-                    client.channels.cache.get(server.upcoming.channelID).messages.fetch(server.upcoming.messageID).then(msg => msg.edit(Embed))
+                        client.channels.cache.get(server.upcoming.channelID).messages.fetch(server.upcoming.messageID).then(msg => msg.edit(Embed))
+                    }
                 })
             }
 
