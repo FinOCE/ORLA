@@ -16,7 +16,9 @@ module.exports = async (client) => {
             servers.getAll().forEach(server => {
                 server.upcoming = JSON.parse(server.upcoming)
                 server.autorole = JSON.parse(server.autorole)
+                server.xproles = JSON.parse(server.xproles)
                 server.rankroles = JSON.parse(server.rankroles)
+                server.manualrole = JSON.parse(server.manualrole)
             })
             client.servers = servers.getAll()
 
