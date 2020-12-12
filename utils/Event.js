@@ -91,8 +91,12 @@ module.exports.Event = class Event {
                         +`\nRegistration Ends: ${moment.unix(this.startTime).tz(client.servers[id].timezone).format('h:mma z')}`
                         +`\nTournament Starts: ${moment.unix(this.startTime).tz(client.servers[id].timezone).format('h:mma z')}\n\`\`\``)
                 
-                const channel = client.channels.cache.find(c => c.id === client.servers[id].announcements)
-                channel.send(`<@&${client.servers[id].pingrole}>`, Embed)
+                try {
+                    const channel = client.channels.cache.find(c => c.id === client.servers[id].announcements)
+                    channel.send(`<@&${(client.servers[id].pingrole !== null) ? client.servers[id].pingrole : ''}>`, Embed)
+                } catch(err) {
+                    console.log(err)
+                }
             }
         })
 
@@ -120,9 +124,12 @@ module.exports.Event = class Event {
                         `*You can enter this tournament by registering at:*\n➡️** ${this.customURL} **`
                         +`${(this.open) ? '' : '\n\n⚠️ ***Registration requires an invite***'}`
                         +`${(this.streamURL === null) ? '' : `\n\n*You can watch this tournament's live stream at:*\n➡️** ${this.streamURL} **`}`)
-
-                const channel = client.channels.cache.find(c => c.id === client.servers[id].notifications)
-                channel.send(`<@&${client.servers[id].pingrole}>`, Embed)
+                try {
+                    const channel = client.channels.cache.find(c => c.id === client.servers[id].notifications)
+                    channel.send(`<@&${(client.servers[id].pingrole !== null) ? client.servers[id].pingrole : ''}>`, Embed)
+                } catch(err) {
+                    console.log(err)
+                }
             }
         })
 
