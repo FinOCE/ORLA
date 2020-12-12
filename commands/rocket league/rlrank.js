@@ -1,7 +1,7 @@
 module.exports = {
 	desc: 'checks Rocket League rank stats',
 	syntax: '[platform] [account]',
-	onlyORLA: true,
+	//onlyORLA: true,
 	async run(message, args) {
 		const Discord = require('discord.js')
 		const moment = require('moment-timezone')
@@ -62,7 +62,7 @@ module.exports = {
 		const platforms = {steam: 'steam', pc: 'steam', xbox: 'xbl', ps: 'psn'}
         accountInfo['platform'] = platforms[accountInfo['platform']]
 
-		const loading = message.guild.emojis.cache.find(emoji => emoji.name === 'd_loading')
+		const loading = message.client.guilds.cache.find(g => g.id === '690588183683006465').emojis.cache.find(e => e.name === 'd_loading')
 
 		message.channel.send(`${loading} Getting rank...`).then(async msg => {
 			const {Stat} = require('../../utils/Stat')
@@ -85,12 +85,12 @@ module.exports = {
 					let emote = ''
 					for (x = 0; x < ranksList.length; x++) {
 						if (mode.rank.replace(/ /g,'') == ranksList[x]) {
-							emote = message.guild.emojis.cache.find(emoji => emoji.name === ranksEmoji[x])
+							emote = message.client.guilds.cache.find(g => g.id === '690588183683006465').emojis.cache.find(e => e.name === ranksEmoji[x])
 						}
 					}
 					
-					d_up = message.guild.emojis.cache.find(emoji => emoji.name === 'd_up')
-					d_down = message.guild.emojis.cache.find(emoji => emoji.name === 'd_down')
+					d_up = message.client.guilds.cache.find(g => g.id === '690588183683006465').emojis.cache.find(e => e.name === 'd_up')
+					d_down = message.client.guilds.cache.find(g => g.id === '690588183683006465').emojis.cache.find(e => e.name === 'd_down')
 					
 					const rank = ((mode.rank === 'Supersonic Legend') || (mode.rank === 'Unranked')) ? `${emote} (${mode.mmr})` : `${emote} Div ${mode.division} (${mode.mmr})`
 					
@@ -105,7 +105,7 @@ module.exports = {
 					const games = (mode.name === 'Casual') ? '' : `🕐 ${mode.games} - ${streak}`
 					const position = (mode.overall >= 1000) ? `${Math.floor((100 - mode.percentile)*10)/10}%` : `#${mode.overall}`
 					
-					Embed.addField(`__${mode.name}__ *(${position})*`, `${rank}\n${mmr}\n${games}`, true)
+					Embed.addField(`__${mode.name}__ *(Top ${position})*`, `${rank}\n${mmr}\n${games}`, true)
 					
 					totalModes += 1
 				}
