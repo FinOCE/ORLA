@@ -32,8 +32,8 @@ module.exports = (client, message) => {
     if ((cmd.onlyORLA !== undefined) && (message.guild.id !== '690588183683006465')) {
         message.delete().then(() => {
             client.error('notMainServer', message)
-            return
         })
+        return
     }
 
     // Delete command message and run command
