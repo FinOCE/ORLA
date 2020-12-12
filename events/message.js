@@ -8,7 +8,14 @@ module.exports = (client, message) => {
     if (!(message.author.id in client.xpEarnt) && message.guild.id === '690588183683006465') {
         client.xpEarnt[message.author.id] = moment().unix() + 60
 
-        client.xp.addXP(message, message.author.id, 11, 15)
+        client.xp.addXP(message, message.author.id, 11, 15);
+
+        (async () => {
+            const {User} = require('../utils/User')
+            const users = await client.query('SELECT * FROM `users` WHERE `id`="'+message.author.id+'"')
+            const user = await User.build(client, users.getFirst())
+            await user.Experience().update(message)
+        })()
 
         client.setTimeout(_ => {
             delete client.xpEarnt[message.author.id]
