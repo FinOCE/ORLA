@@ -6,8 +6,6 @@ client.sql = require('./utils/sql.js') // REPLACED BY Database, replace in files
 const {Database} = require('./utils/Database')
 client.query = (sql) => Database.query(sql)
 
-client.roles = require('./utils/roles.js')
-
 client.xp = require('./utils/xp.js')
 client.xpEarnt = {}
 client.xpEarntVC = {}
