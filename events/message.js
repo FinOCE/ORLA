@@ -12,8 +12,7 @@ module.exports = (client, message) => {
 
         (async () => {
             const {User} = require('../utils/User')
-            const users = await client.query('SELECT * FROM `users` WHERE `id`="'+message.author.id+'"')
-            const user = await User.build(client, users.getFirst())
+            const user = await User.build(client, message.author.id)
             await user.Experience().update(message)
         })()
 
