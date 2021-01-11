@@ -26,7 +26,7 @@ module.exports.User = class User {
                 },
                 orla: {
                     nick: sql.nick,
-                    url: sql.url,
+                    url: (sql.url !== null) ? `https://orla.pro/${sql.url}` : null,
                     xp: {
                         total: total,
                         level: level,
@@ -46,7 +46,8 @@ module.exports.User = class User {
                     username: discord.username,
                     discriminator: discord.discriminator,
                     bot: discord.bot,
-                    avatarURL: discord.avatarURL()
+                    avatarURL: discord.avatarURL(),
+                    createdAt: discord.createdAt
                 }
             })
         } else {
