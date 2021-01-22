@@ -40,7 +40,7 @@ module.exports.Database = class Database {
 
     // ----- Queries -----
     exists() {
-        return (0 in this.json) ? true : false
+        return (0 in this.json)
     }
     getAll() {
         return this.json
