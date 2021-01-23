@@ -10,8 +10,9 @@ module.exports = {
         const events = query.getAll()
         events.sort(function(a, b) {return a.ttime - b.ttime})
 
-        query = await message.client.query('SELECT * FROM `users` WHERE `id`="'+message.author.id+'"')
-        const timezone = query.getFirst().timezone
+        const {User} = require('../../utils/User')
+        const user = await User.build(message.client, message.author.id)
+        const timezone = user.timezone
 
         const Embed = new Discord.MessageEmbed()
             .setColor(message.client.config.color)

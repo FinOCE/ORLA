@@ -14,10 +14,23 @@ module.exports.User = class User {
                 level += 1
                 cost = 5*(level*level) + 50*level + 100
             }
+            
+            const timezones = {
+                qld: 'Australia/Brisbane',
+                nsw: 'Australia/Sydney',
+                nt: 'Australia/Darwin',
+                wa: 'Australia/Perth',
+                sa: 'Australia/Adelaide',
+                vic: 'Australia/Melbourne',
+                act: 'Australia/Canberra',
+                tas: 'Australia/Hobart',
+                nz: 'Oceania/Auckland'
+            }
 
             return new User({
                 id: discord.id,
                 location: sql.location,
+                timezone: timezones[sql.location.toLowerCase()],
                 platforms: {
                     main: sql.main,
                     steam: sql.steam,
