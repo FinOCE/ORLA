@@ -22,9 +22,20 @@ module.exports = {
 
         // Add XP widget
         let position = await message.client.query('SELECT * FROM `users` WHERE `xp`>'+user.orla.xp.total)
-        position = position.getAll()
-        const line = ''
-        Embed.addField('Discord XP', `Level: **${user.orla.xp.level}**\n${line}\nTotal: **${user.orla.xp.total}** - **${user.orla.xp.progress.remaining}**/**${user.orla.xp.progress.cost}**\nPosition: **#${position.length+1}**`, true)
+        position = position.getAll().length+1
+
+        const c_b = message.client.guilds.cache.find(g => g.id === '690588183683006465').emojis.cache.find(e => e.name === 'c_b')
+        const c_w = message.client.guilds.cache.find(g => g.id === '690588183683006465').emojis.cache.find(e => e.name === 'c_w')
+
+        let bar = ''
+        for (let i = 0; i < Math.round((user.orla.xp.progress.remaining/user.orla.xp.progress.cost)*10); i++) {
+            bar += `${c_b}`
+        }
+        for (let i = 0; i < 10-Math.round((user.orla.xp.progress.remaining/user.orla.xp.progress.cost)*10); i++) {
+            bar += `${c_w}`
+        }
+
+        Embed.addField('Discord XP', `Level: **${user.orla.xp.level}**\n${bar}\nTotal: **${user.orla.xp.total}** - **${user.orla.xp.progress.remaining}**/**${user.orla.xp.progress.cost}**\nPosition: **#${position}**`, true)
 
         // Add platform widget
         let platformField = ''
@@ -42,12 +53,11 @@ module.exports = {
         roles.forEach(role => {
             roleField += role + ' '
         })
-        Embed.addField('Roles', roleField, false)
+        Embed.addField('Roles', (roleField.length > 0) ? roleField : '*User has no roles*', false)*
 
         // Add key date widgets
-        /* ----- CHECK WHY FIRST IS NOT DOING DAYLIGHT SAVINGS, UPDATE TO USE USER'S TIMEZONE ----- */
-        Embed.addField('Account Created', moment.unix(Math.round(user.discord.createdAt/1000)).tz('Australia/Brisbane').format('Do MMMM YYYY, h:mma z'), true)
-        Embed.addField('Joined Server', moment.unix(Math.round(member.joinedTimestamp/1000)).tz('Australia/Brisbane').format('Do MMMM YYYY, h:mma z'), true)
+        Embed.addField('Account Created', moment.unix(Math.round(user.discord.createdAt/1000)).tz(user.timezone).format('Do MMMM YYYY, h:mma z'), true)
+        Embed.addField('Joined Server', moment.unix(Math.round(member.joinedTimestamp/1000)).tz(user.timezone).format('Do MMMM YYYY, h:mma z'), true)
 
         // Send Embed
         message.channel.send(Embed)
