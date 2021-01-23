@@ -20,7 +20,7 @@ module.exports = {
 			return
 		}
 
-		await message.client.sql('UPDATE `users` SET `platform`="'+args[0].toLowerCase()+'",`account`="'+args[1]+'"')
+		await message.client.query('UPDATE `users` SET `platform`="'+args[0].toLowerCase()+'",`account`="'+args[1]+'"')
 
 		const response = 'Your account has been linked to your profile. The account details you set are as follows:\n\n'
 						+`Platform: \`${args[0].toLowerCase()}\`\n`

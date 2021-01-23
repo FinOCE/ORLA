@@ -14,8 +14,8 @@ module.exports = {
 
 		if (!(0 in args)) {
 			// if checking own rank
-			const userSQL = await message.client.sql('SELECT * FROM `users` WHERE `id`="'+message.author.id+'"')
-			const user = userSQL[0]
+			let query = await message.client.query('SELECT * FROM `users` WHERE `id`="'+message.author.id+'"')
+			const user = query.getFirst()
 
 			if (user.main !== null) {
 				// if account is linked
@@ -31,8 +31,8 @@ module.exports = {
 			// if checking other player's rank
 			if (message.mentions.members.first()) {
 				// if checking via ping
-				const userSQL = await message.client.sql('SELECT * FROM `users` WHERE `id`="'+message.mentions.members.first().user.id+'"')
-				const user = userSQL[0]
+				let query = await message.client.query('SELECT * FROM `users` WHERE `id`="'+message.mentions.members.first().user.id+'"')
+				const user = query.getFirst()
 
 				if (user.main !== null) {
 					// if account is linked
@@ -118,8 +118,8 @@ module.exports = {
 				msg.edit(' ', Embed)
 
 				if (accountInfo['isReal'] === true) {
-					const rankIDSQL = await message.client.sql('SELECT `rankroles` FROM `servers` WHERE `id`="'+message.channel.guild.id+'"')
-					const rankID = JSON.parse(rankIDSQL[0].rankroles)
+					let query = await message.client.query('SELECT `rankroles` FROM `servers` WHERE `id`="'+message.channel.guild.id+'"')
+					const rankID = JSON.parse(query.getFirst())
 					
 					if (rankID !== null) {
 						for (i in rankID) {

@@ -8,14 +8,16 @@ module.exports.Event = class Event {
         this.client = client
         const json = {}
 
-        let series = await this.client.sql('SELECT `series` FROM `hosts` WHERE `name`="'+sql[0].host+'"')
+        let query = await this.client.query('SELECT `series` FROM `hosts` WHERE `name`="'+sql[0].host+'"')
+        const series = query.getAll()
         json.series = {
             code: sql[0].series,
             name: JSON.parse(series[0].series)[sql[0].series].title,
             imageURL: `https://orla.pro/assets/series/${JSON.parse(series[0].series)[sql[0].series].image}.png`
         }
 
-        let host = await this.client.sql('SELECT * FROM `hosts` WHERE `name`="'+sql[0].host+'"')
+        query = await this.client.query('SELECT * FROM `hosts` WHERE `name`="'+sql[0].host+'"')
+        const host = query.getAll()
         json.host = {
             code: host[0].name,
             name: host[0].title,
@@ -100,7 +102,7 @@ module.exports.Event = class Event {
             }
         })
 
-        client.sql('UPDATE `tournaments` SET `announced`=1 WHERE `title`="'+this.name+'"')
+        client.query('UPDATE `tournaments` SET `announced`=1 WHERE `title`="'+this.name+'"')
     }
     notify(client) {
         const Discord = require('discord.js')
@@ -133,7 +135,7 @@ module.exports.Event = class Event {
             }
         })
 
-        client.sql('UPDATE `tournaments` SET `reminded`=1 WHERE `title`="'+this.name+'"')
+        client.query('UPDATE `tournaments` SET `reminded`=1 WHERE `title`="'+this.name+'"')
     }
     async query(message, question) {
         if (this.cancelled !== false) {

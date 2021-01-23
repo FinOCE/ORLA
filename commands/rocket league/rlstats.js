@@ -14,8 +14,8 @@ module.exports = {
 
 		if (!(0 in args)) {
 			// if checking own rank
-			const userSQL = await message.client.sql('SELECT * FROM `users` WHERE `id`="'+message.author.id+'"')
-			const user = userSQL[0]
+			let query = await message.client.query('SELECT * FROM `users` WHERE `id`="'+message.author.id+'"')
+			const user = query.getFirst()
 
 			if (user.main !== null) {
 				// if account is linked
@@ -31,8 +31,8 @@ module.exports = {
 			// if checking other player's rank
 			if (message.mentions.members.first()) {
 				// if checking via ping
-				const userSQL = await message.client.sql('SELECT * FROM `users` WHERE `id`="'+message.mentions.members.first().user.id+'"')
-				const user = userSQL[0]
+				let query = await message.client.query('SELECT * FROM `users` WHERE `id`="'+message.mentions.members.first().user.id+'"')
+				const user = query.getFirst()
 
 				if (user.main !== null) {
 					// if account is linked

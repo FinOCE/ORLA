@@ -6,11 +6,12 @@ module.exports = {
         const moment = require('moment-timezone')
         const momentDurationFormatSetup = require("moment-duration-format")
 
-        const events = await message.client.sql('SELECT * FROM `tournaments` WHERE `ttime`>'+(moment().unix()-604800)+' AND `ttime`<'+moment().unix())
-        events.sort(function(a, b) {return b.ttime - a.ttime})
+        let query = await message.client.query('SELECT * FROM `tournaments` WHERE `ttime`>'+(moment().unix()-604800)+' AND `ttime`<'+moment().unix())
+        const events = query.getAll()
+        events.sort(function(a, b) {return a.ttime - b.ttime})
 
-        const userSQL = await message.client.sql('SELECT * FROM `users` WHERE `id`="'+message.author.id+'"')
-        const timezone = userSQL[0].timezone
+        query = await message.client.query('SELECT * FROM `users` WHERE `id`="'+message.author.id+'"')
+        const timezone = query.getFirst().timezone
 
         const Embed = new Discord.MessageEmbed()
             .setColor(message.client.config.color)
