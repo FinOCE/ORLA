@@ -27,10 +27,12 @@ module.exports.User = class User {
                 nz: 'Oceania/Auckland'
             }
 
+            const timezone = (sql.location !== null) ? sql.location.toLowerCase() : null
+
             return new User({
                 id: discord.id,
                 location: sql.location,
-                timezone: timezones[sql.location.toLowerCase()],
+                timezone: timezone,
                 platforms: {
                     main: sql.main,
                     steam: sql.steam,
