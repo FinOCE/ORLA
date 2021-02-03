@@ -60,7 +60,8 @@ module.exports = {
 			}
 		}
 		const platforms = {steam: 'steam', pc: 'steam', xbox: 'xbl', ps: 'psn'}
-        accountInfo['platform'] = platforms[accountInfo['platform']]
+		accountInfo['platform'] = platforms[accountInfo['platform']]
+		if (accountInfo.platform === 'steam') accountInfo.account = accountInfo.account.toLowerCase()
 
 		const loading = message.client.guilds.cache.find(g => g.id === '690588183683006465').emojis.cache.find(e => e.name === 'd_loading')
 
