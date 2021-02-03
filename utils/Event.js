@@ -7,24 +7,21 @@ module.exports.Event = class Event {
     static async build(client, sql) {
         this.client = client
         const json = {}
-
-        let query = await this.client.query('SELECT `series` FROM `hosts` WHERE `name`="'+sql[0].host+'"')
-        const series = query.getAll()
+        
+        const series = client.hosts[sql[0].host].series
         json.series = {
             code: sql[0].series,
-            name: JSON.parse(series[0].series)[sql[0].series].title,
-            imageURL: `https://orla.pro/assets/series/${JSON.parse(series[0].series)[sql[0].series].image}.png`
+            name: series[sql[0].series].title,
+            imageURL: `https://orla.pro/assets/series/${series[sql[0].series].image}.png`
         }
-
-        query = await this.client.query('SELECT * FROM `hosts` WHERE `name`="'+sql[0].host+'"')
-        const host = query.getAll()
+        
         json.host = {
-            code: host[0].name,
-            name: host[0].title,
-            emoji: host[0].emoji,
-            color: host[0].color,
-            series: JSON.parse(series[0].series),
-            logoURL: `https://orla.pro/assets/hosts/${host[0].name}.png`
+            code: client.hosts[sql[0].host].name,
+            name: client.hosts[sql[0].host].title,
+            emoji: client.hosts[sql[0].host].emoji,
+            color: client.hosts[sql[0].host].color,
+            series: series,
+            logoURL: `https://orla.pro/assets/hosts/${client.hosts[sql[0].host].name}.png`
         }
 
         json.name = sql[0].title
@@ -90,7 +87,7 @@ module.exports.Event = class Event {
                         +`${(this.streamURL === null) ? '' : `\n\n*You can watch this tournament's live stream at:*\n➡️** ${this.streamURL} **`}`)
                     .addField('🕐 **__Schedule__**',
                         `\`\`\`http\nTournament Date:   ${moment.unix(this.startTime).tz(client.servers[id].timezone).format('dddd Do MMMM')}`
-                        +`\nRegistration Ends: ${moment.unix(this.startTime).tz(client.servers[id].timezone).format('h:mma z')}`
+                        +`\nRegistration Ends: ${moment.unix(this.registrationTime).tz(client.servers[id].timezone).format('h:mma z')}`
                         +`\nTournament Starts: ${moment.unix(this.startTime).tz(client.servers[id].timezone).format('h:mma z')}\n\`\`\``)
                 
                 try {

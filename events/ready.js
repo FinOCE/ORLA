@@ -22,11 +22,15 @@ module.exports = async (client) => {
                 server.stateroles = JSON.parse(server.stateroles)
             })
             client.servers = servers.getAll()
-
+            
             // Get hosts
-            const hosts = await client.query('SELECT * FROM `hosts`')
-            hosts.getAll().forEach(host => host.series = JSON.parse(host.series))
-            client.hosts = hosts.getAll()
+            const hostsArray = await client.query('SELECT * FROM `hosts`')
+            const hosts = {}
+            hostsArray.getAll().forEach(host => {
+                host.series = JSON.parse(host.series)
+                hosts[host.name] = host
+            })
+            client.hosts = hosts
 
             // Upcoming
             {
@@ -50,7 +54,7 @@ module.exports = async (client) => {
                         events.getAll().forEach(async eventData => {
                             const event = await Event.build(client, [eventData])
                             
-                            const icon = client.emojis.cache.get(client.hosts.find(host => host.name === event.host.code).emoji)
+                            const icon = client.emojis.cache.get(client.hosts[event.host.code].emoji)
                             Embed.addField(event.getUpcomingTitle(icon), event.getUpcomingMessage(server))
                         })
 
@@ -60,10 +64,10 @@ module.exports = async (client) => {
                     }
                 })
             }
-
+            
             // Announcements
             {
-                const events = await client.query('SELECT * FROM `tournaments` WHERE `announced`=0')
+                const events = await client.query('SELECT * FROM `tournaments` WHERE `announced`=0 AND `ttime`>'+moment().unix())
 
                 events.getAll().forEach(async eventData => {
                     const event = await Event.build(client, [eventData])
@@ -73,7 +77,7 @@ module.exports = async (client) => {
             
             // Notifications
             {
-                const events = await client.query('SELECT * FROM `tournaments` WHERE `reminded`=0 AND `rtime`<3600+'+moment().unix())
+                const events = await client.query('SELECT * FROM `tournaments` WHERE `reminded`=0 AND `rtime`<3600+'+moment().unix()+' AND `ttime`>'+moment().unix())
 
                 events.getAll().forEach(async eventData => {
                     const event = await Event.build(client, [eventData])
