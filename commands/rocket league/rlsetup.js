@@ -6,17 +6,17 @@ module.exports = {
 		const Discord = require('discord.js')
 
 		if (!(0 in args)) {
-			message.client.error('invalidSyntax', message)
+			message.client.error('invalidSyntax', message).send()
 			return
 		}
 
 		if (['pc', 'ps', 'xbox'].indexOf(args[0].toLowerCase()) === -1) {
-			message.client.error('invalidPlatform', message)
+			message.client.error('invalidPlatform', message).send()
 			return
 		}
 
 		if (!(1 in args)) {
-			message.client.error('noPlayerSpecified', message)
+			message.client.error('noPlayerSpecified', message).send()
 			return
 		}
 

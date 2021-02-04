@@ -35,12 +35,12 @@ module.exports = (client, message) => {
     if (!cmd) return
 
     if ((cmd.category === 'staff') && !message.member.hasPermission('MANAGE_MESSAGES')) {
-        client.error('invalidPermission', message)
+        client.error('invalidPermission', message).send()
         return
     }
     if ((cmd.onlyORLA !== undefined) && (message.guild.id !== '690588183683006465')) {
         message.delete().then(() => {
-            client.error('notMainServer', message)
+            client.error('notMainServer', message).send()
         })
         return
     }

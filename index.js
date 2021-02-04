@@ -1,7 +1,8 @@
 const Discord = require('discord.js')
 const client = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION'] })
 client.config = require('./config.json')
-client.error = require('./utils/error.js')
+const {Error} = require('./utils/Error')
+client.error = (method, message) => new Error(method, message)
 
 // SQL Function
 const {Database} = require('./utils/Database')

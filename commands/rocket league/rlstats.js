@@ -24,7 +24,7 @@ module.exports = {
 				accountInfo['isReal'] = true
 			} else {
 				// if account is not linked
-				message.client.error('notLinked', message)
+				message.client.error('notLinked', message).send()
 				return
 			}
 		} else {
@@ -40,18 +40,18 @@ module.exports = {
 					accountInfo['account'] = user[user.main]
 				} else {
 					// if account is not linked
-					message.client.error('notLinkedOther', message)
+					message.client.error('notLinkedOther', message).send()
 					return
 				}
 			} else {
 				// if checking via platform and account
 				if (['pc', 'ps', 'xbox'].indexOf(args[0].toLowerCase()) === -1) {
-                    message.client.error('invalidPlatform', message)
+                    message.client.error('invalidPlatform', message).send()
                     return
                 }
                 
                 if (!(1 in args)) {
-                    message.client.error('noPlayerSpecified', message)
+                    message.client.error('noPlayerSpecified', message).send()
                     return
 				}
 				

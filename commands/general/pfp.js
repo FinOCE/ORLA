@@ -6,14 +6,14 @@ module.exports = {
         
         if (0 in args) {
             if (!args[0].startsWith('<@!') || !args[0].endsWith('>')) {
-                message.client.error('invalidSyntax', message)
+                message.client.error('invalidSyntax', message).send()
                 return
             }
         }
         const account = (0 in args) ? args[0].split('<@!')[1].split('>')[0] : message.author.id
         
         if (!message.guild.members.cache.get(account)) {
-            message.client.error('invalidSyntax', message)
+            message.client.error('invalidSyntax', message).send()
             return
 	    }
 	    
