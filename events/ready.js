@@ -20,6 +20,7 @@ module.exports = async (client) => {
                 server.rankroles = JSON.parse(server.rankroles)
                 server.manualrole = JSON.parse(server.manualrole)
                 server.stateroles = JSON.parse(server.stateroles)
+                server.joinleave = JSON.parse(server.joinleave)
             })
             client.servers = servers.getAll()
             
