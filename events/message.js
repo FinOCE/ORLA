@@ -13,7 +13,7 @@ module.exports = (client, message) => {
         (async () => {
             const {User} = require('../utils/User')
             const user = await User.build(client, message.author.id)
-            await user.Experience().update(message)
+            await user.orla.xp.update(message)
         })()
 
         client.setTimeout(_ => {
