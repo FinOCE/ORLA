@@ -90,6 +90,9 @@ module.exports = {
 				}
 			}
 
+			// ----- MODE -----
+			event.mode = await event.query(message, 'What mode is the event?')
+
 			// ----- URL -----
 			event.URL = await event.query(message, 'What is the URL to the registration page?')
 
@@ -97,14 +100,15 @@ module.exports = {
 			event.customURL = await event.query(message, 'What do you want the custom URL to be for the ORLA redirect?')
 
 			// ----- STREAM URL -----
-			event.streamURL = await event.query(message, 'What is the URL to the stream page? If there is none, type anything except a link.')
+			const streamURL = await event.query(message, 'What is the URL to the stream page? If there is none, type anything except a link.')
+			event.streamURL = (streamURL.toLowerCase().indexOf('http') !== -1) ? streamURL : null
 
 			// ----- PRIZE -----
 			event.prize = await event.query(message, 'What is the total prize pool for the event?')
 
 			// ----- OPEN -----
 			const open = await event.query(message, 'Is the event open for anyone to join? If so, type anything including the letter Y.')
-			event.open = (open.toLowerCase().includes('y')) ? true : false
+			event.open = (open.toLowerCase().includes('y'))
 
 			// ----- START TIME -----
 			let validStartTime = false
@@ -147,15 +151,9 @@ module.exports = {
 		}).then(async (event) => {
 			const submit = await event.query(message, 'Is this correct? If yes, type anything including the letter Y.\n```js\n'+JSON.stringify(event, null, 4)+'\n```')
 			if (submit.toLowerCase().includes('y')) {
-				message.client.query(`INSERT INTO \`tournaments\` VALUES ("${event.name}", "${event.series}", "${event.host}", "${event.mode}", ${event.startTime}, ${event.open}, "${event.URL}", "${event.customURL}", "${event.prize}", ${event.rtime}, "${event.streamURL}", 0, 0)`)
-				/*
-				TODO: Determine reason for this error when running above code
-
-				(node:2064) UnhandledPromiseRejectionWarning: SequelizeDatabaseError: Unknown column 'undefined' in 'field list'
-					at Query.formatError (...\node_modules\sequelize\lib\dialects\mysql\query.js:239:16)
-					at Query.run (...\node_modules\sequelize\lib\dialects\mysql\query.js:54:18)
-					at processTicksAndRejections (internal/process/task_queues.js:97:5)
-				*/
+				let topen = (event.open) ? 1 : 0
+				message.client.query('INSERT INTO `tournaments` VALUES("'+event.name+'", "'+event.series+'", "'+event.host+'", "'+event.mode+'", "'+event.startTime+'", "'+topen+'", "'+event.URL+'", "'+event.customURL+'", "'+event.prize+'", "'+event.registrationTime+'", "'+event.streamURL+'", 0, 0)')
+				message.channel.send('Event successfully uploaded.')
 			} else {
 				message.channel.send('Upload cancelled.')
 			}
