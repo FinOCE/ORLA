@@ -1,6 +1,9 @@
 module.exports = (client, message) => {
     const moment = require('moment-timezone')
 
+    // Separate development bot channel actions
+    if (!message.channel.name.includes('dev-') || !message.guild.id === client.config.mainServer) return
+
     // Don't run if message is sent by bot, or doesn't start with the prefix
     if (message.author.bot) return
 
