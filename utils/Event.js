@@ -92,7 +92,9 @@ module.exports.Event = class Event {
                 
                 try {
                     const channel = client.channels.cache.find(c => c.id === client.servers[id].announcements)
-                    channel.send(`<@&${(client.servers[id].pingrole !== null) ? client.servers[id].pingrole : ''}>`, Embed)
+                    channel.send(`<@&${(client.servers[id].pingrole !== null) ? client.servers[id].pingrole : ''}>`, Embed).then(message => {
+                        if (message.channel.type === 'news') message.crosspost()
+                    })
                 } catch(err) {
                     console.log(err)
                 }
@@ -125,7 +127,9 @@ module.exports.Event = class Event {
                         +`${(this.streamURL === null) ? '' : `\n\n*You can watch this tournament's live stream at:*\n➡️** ${this.streamURL} **`}`)
                 try {
                     const channel = client.channels.cache.find(c => c.id === client.servers[id].notifications)
-                    channel.send(`<@&${(client.servers[id].pingrole !== null) ? client.servers[id].pingrole : ''}>`, Embed)
+                    channel.send(`<@&${(client.servers[id].pingrole !== null) ? client.servers[id].pingrole : ''}>`, Embed).then(message => {
+                        if (message.channel.type === 'news') message.crosspost()
+                    })
                 } catch(err) {
                     console.log(err)
                 }
