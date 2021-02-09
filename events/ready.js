@@ -2,6 +2,10 @@ module.exports = async (client) => {
     const Discord = require('discord.js')
     const moment = require('moment-timezone')
 
+    // Setup website
+    const Website = require('../website/website')
+    Website(client)
+
     // Set status and show the bot is running
     console.log('Bot is now online')
     client.user.setActivity('orla.pro | .help', {type: 'WATCHING'})
