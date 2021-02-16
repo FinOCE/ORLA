@@ -1,6 +1,9 @@
 module.exports = (client, message) => {
     const moment = require('moment-timezone')
 
+    // Ignore DMs
+    if (message.channel.type === 'dm') return
+
     // Separate development bot channel actions
     if (!message.channel.name.includes('dev-') || !message.guild.id === client.config.mainServer) return
 
@@ -45,7 +48,7 @@ module.exports = (client, message) => {
     }
 
     // Delete command message and run command
-    message.delete().then(_ => {
+    message.delete().then(() => {
         cmd.run(message, args)
     })
 }
