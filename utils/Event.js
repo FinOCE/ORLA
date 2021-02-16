@@ -5,47 +5,55 @@ module.exports.Event = class Event {
         Object.keys(json).forEach(p => this[p] = json[p])
     }
     static async build(client, sql) {
-        this.client = client
-        const json = {}
+        const event = {}
+
+        // Define host and series for cleaner code
+        const host = client.hosts[sql.host]
+        const series = host.series[sql.series]
         
-        const series = client.hosts[sql[0].host].series
-        json.series = {
-            code: sql[0].series,
-            name: series[sql[0].series].title,
-            imageURL: `https://orla.pro/assets/series/${series[sql[0].series].image}.png`
-        }
-        
-        json.host = {
-            code: client.hosts[sql[0].host].name,
-            name: client.hosts[sql[0].host].title,
-            emoji: client.hosts[sql[0].host].emoji,
-            color: client.hosts[sql[0].host].color,
-            series: series,
-            logoURL: `https://orla.pro/assets/hosts/${client.hosts[sql[0].host].name}.png`
+        // Add series info if provided
+        if (sql.series !== null) {
+            event.series = {
+                code: sql.series,
+                name: series.title,
+                imageURL: `https://orla.pro/assets/series/${series.image}.png`
+            }
+        } else {
+            event.series = null
         }
 
-        json.name = sql[0].title
-        json.URL = sql[0].link
-        json.customURL = `https://orla.pro/events/${sql[0].redirect}`
-        json.streamURL = sql[0].stream
-        json.open = (sql[0].topen === 1) ? true : false
-        json.mode = sql[0].mode
-        json.prize = sql[0].prize
-        json.announced = sql[0].announced
-        json.reminded = sql[0].reminded
+        // Add host info
+        event.host = {
+            code: host.name,
+            name: host.title,
+            emoji: host.emoji,
+            color: host.color,
+            logoURL: `https://orla.pro/assets/hosts/${host.name}.png`
+        }
 
-        json.startTime = sql[0].ttime
-        json.registrationTime = sql[0].rtime
+        // Add other information about the event
+        Object.assign(event, {
+            name: sql.title,
+            URL: sql.link,
+            customURL: `https://orla.pro/events/${sql.redirect}`,
+            open: (sql.topen === 1),
+            mode: sql.mode,
+            prize: sql.prize,
+            announced: sql.announced,
+            reminded: sql.reminded,
+            startTime: sql.ttime,
+            registrationTime: sql.rtime
+        })
 
-        return new Event(client, json)
+        return new Event(client, event)
     }
 
     // ----- Queries -----
     isAnnounced() {
-        return (this.announced === 1) ? true : false
+        return (this.announced === 1)
     }
     isNotified() {
-        return (this.reminded === 1) ? true : false
+        return (this.reminded === 1)
     }
     getUpcomingTitle(icon) {
         return `${icon} **\`${this.name}\`**`
@@ -69,8 +77,8 @@ module.exports.Event = class Event {
         const Discord = require('discord.js')
         const moment = require('moment-timezone')
 
-        Object.keys(client.servers).forEach(id => {
-            if (client.servers[id].announcements !== null) {
+        client.servers.forEach(server => {
+            if (server.announcements !== null) {
                 const Embed = new Discord.MessageEmbed()
                     .setColor(this.host.color)
                     .setTitle(`\`${this.name}\``)
@@ -86,13 +94,13 @@ module.exports.Event = class Event {
                         +`${(this.open) ? '' : '\n\n⚠️ ***Registration requires an invite***'}`
                         +`${(this.streamURL === null) ? '' : `\n\n*You can watch this tournament's live stream at:*\n➡️** ${this.streamURL} **`}`)
                     .addField('🕐 **__Schedule__**',
-                        `\`\`\`http\nTournament Date:   ${moment.unix(this.startTime).tz(client.servers[id].timezone).format('dddd Do MMMM')}`
-                        +`\nRegistration Ends: ${moment.unix(this.registrationTime).tz(client.servers[id].timezone).format('h:mma z')}`
-                        +`\nTournament Starts: ${moment.unix(this.startTime).tz(client.servers[id].timezone).format('h:mma z')}\n\`\`\``)
+                        `\`\`\`http\nTournament Date:   ${moment.unix(this.startTime).tz(server.timezone).format('dddd Do MMMM')}`
+                        +`\nRegistration Ends: ${moment.unix(this.registrationTime).tz(server.timezone).format('h:mma z')}`
+                        +`\nTournament Starts: ${moment.unix(this.startTime).tz(server.timezone).format('h:mma z')}\n\`\`\``)
                 
                 try {
-                    const channel = client.channels.cache.find(c => c.id === client.servers[id].announcements)
-                    channel.send(`<@&${(client.servers[id].pingrole !== null) ? client.servers[id].pingrole : ''}>`, Embed).then(message => {
+                    const channel = client.channels.cache.find(c => c.id === server.announcements)
+                    channel.send(`<@&${(server.pingrole !== null) ? server.pingrole : ''}>`, Embed).then(message => {
                         if (message.channel.type === 'news') message.crosspost()
                     })
                 } catch(err) {
@@ -107,8 +115,8 @@ module.exports.Event = class Event {
         const Discord = require('discord.js')
         const moment = require('moment-timezone')
 
-        Object.keys(client.servers).forEach(id => {
-            if (client.servers[id].notifications !== null) {
+        client.servers.forEach(server => {
+            if (server.notifications !== null) {
                 const Embed = new Discord.MessageEmbed()
                     .setColor(this.host.color)
                     .setTitle(`\`${this.name}\``)
@@ -118,16 +126,16 @@ module.exports.Event = class Event {
                     .setThumbnail((this.series !== null) ? this.series.imageURL : this.host.logoURL)
                     .setDescription(
                         '```fix\nREGISTRATION CLOSES IN ONE HOUR\n```\nRegistration for this tournament closes at **'
-                        +moment.unix(this.registrationTime).tz(client.servers[id].timezone).format('h:mma z')
+                        +moment.unix(this.registrationTime).tz(server.timezone).format('h:mma z')
                         +'**. To register or watch the tournament, follow the links below. The tournament starts at **'
-                        +moment.unix(this.startTime).tz(client.servers[id].timezone).format('h:mma z')+'**.')
+                        +moment.unix(this.startTime).tz(server.timezone).format('h:mma z')+'**.')
                     .addField('🔗 **__Links__**',
                         `*You can enter this tournament by registering at:*\n➡️** ${this.customURL} **`
                         +`${(this.open) ? '' : '\n\n⚠️ ***Registration requires an invite***'}`
                         +`${(this.streamURL === null) ? '' : `\n\n*You can watch this tournament's live stream at:*\n➡️** ${this.streamURL} **`}`)
                 try {
-                    const channel = client.channels.cache.find(c => c.id === client.servers[id].notifications)
-                    channel.send(`<@&${(client.servers[id].pingrole !== null) ? client.servers[id].pingrole : ''}>`, Embed).then(message => {
+                    const channel = client.channels.cache.find(c => c.id === server.notifications)
+                    channel.send(`<@&${(server.pingrole !== null) ? server.pingrole : ''}>`, Embed).then(message => {
                         if (message.channel.type === 'news') message.crosspost()
                     })
                 } catch(err) {
