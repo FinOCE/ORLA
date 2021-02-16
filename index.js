@@ -8,9 +8,9 @@ client.error = (method, message) => new Error(method, message)
 const {Database} = require('./utils/Database')
 client.query = (sql) => Database.query(sql)
 
-client.xp = require('./utils/xp.js')
-client.xpEarnt = {}
-client.xpEarntVC = {}
+// Set XP timer storage for messages and voice chats
+client.xpFromMessage = []
+client.xpFromVoice = {}
 
 require('dotenv').config()
 

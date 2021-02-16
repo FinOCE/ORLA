@@ -48,6 +48,8 @@ module.exports.User = class User {
                             remaining: remaining,
                             cost: cost
                         },
+                        giveFromMessage() {client.query('UPDATE `users` SET `xp`=`xp`+'+Math.floor(Math.random()*11 + 15)+' WHERE `id`="'+sql.id+'"')},
+                        giveFromVoice() {client.query('UPDATE `users` SET `xp`=`xp`+'+Math.floor(Math.random()*6 + 5)+' WHERE `id`="'+sql.id+'"')},
                         give(amount) {client.query('UPDATE `users` SET `xp`=`xp`+'+amount+' WHERE `id`="'+sql.id+'"')},
                         take(amount) {client.query('UPDATE `users` SET `xp`=`xp`-'+amount+' WHERE `id`="'+sql.id+'"')},
                         set(amount) {client.query('UPDATE `users` SET `xp`='+amount+' WHERE `id`="'+sql.id+'"')},

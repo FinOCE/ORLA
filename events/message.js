@@ -8,19 +8,18 @@ module.exports = (client, message) => {
     if (message.author.bot) return
 
     // Give xp where applicable
-    if (!(message.author.id in client.xpEarnt) && message.guild.id === '690588183683006465') {
-        client.xpEarnt[message.author.id] = moment().unix() + 60
-
-        client.xp.addXP(message, message.author.id, 11, 15);
+    if (!(message.author.id in client.xpFromMessage) && message.guild.id === '690588183683006465') {
+        client.xpFromMessage.push([message.author.id])
 
         (async () => {
             const {User} = require('../utils/User')
             const user = await User.build(client, message.author.id)
-            await user.orla.xp.update(message)
+            user.orla.xp.giveFromMessage()
+            user.orla.xp.update(message)
         })()
 
-        client.setTimeout(_ => {
-            delete client.xpEarnt[message.author.id]
+        client.setTimeout(() => {
+            delete client.xpFromMessage[message.author.id]
         }, 60000)
     }
 
