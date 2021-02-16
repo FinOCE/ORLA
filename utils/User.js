@@ -53,11 +53,13 @@ module.exports.User = class User {
                         take(amount) {client.query('UPDATE `users` SET `xp`=`xp`-'+amount+' WHERE `id`="'+sql.id+'"')},
                         set(amount) {client.query('UPDATE `users` SET `xp`='+amount+' WHERE `id`="'+sql.id+'"')},
                         update(message) {
-                            const xproles = client.servers.find(s => s.id === message.guild.id).xproles
+                            // Rewrite for User object context
+                            /*
+                            const xproles = client.servers[message.guild.id].xproles
                             if (xproles !== null && level >= 5) {
                                 if (level >= 10) message.member.roles.remove(xproles[Math.floor(level/5)-2])
                                 message.member.roles.add(xproles[Math.floor(this.level/5)-1])
-                            }
+                            }*/
                         }
                     },
                     gotw: {

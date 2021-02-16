@@ -2,9 +2,11 @@ module.exports = async (client) => {
     const Discord = require('discord.js')
     const moment = require('moment-timezone')
 
-    // Setup website
-    const Website = require('../website/website')
-    Website(client)
+    // Start website if on development build
+    if (client.config.dev) {
+        const Website = require('../website/website')
+        Website(client)
+    }
 
     // Set status and show the bot is running
     console.log('Bot is now online')
@@ -15,27 +17,24 @@ module.exports = async (client) => {
         (async () => {
             const {Event} = require('../utils/Event')
 
-            // Create server list
+            // Create client.servers object
             const servers = await client.query('SELECT * FROM `servers`')
+            client.servers = {}
             servers.getAll().forEach(server => {
-                server.upcoming = JSON.parse(server.upcoming)
-                server.autorole = JSON.parse(server.autorole)
-                server.xproles = JSON.parse(server.xproles)
-                server.rankroles = JSON.parse(server.rankroles)
-                server.manualrole = JSON.parse(server.manualrole)
-                server.stateroles = JSON.parse(server.stateroles)
-                server.joinleave = JSON.parse(server.joinleave)
+                const valuesToParse = ['upcoming', 'autorole', 'xproles', 'rankroles', 'manualrole', 'stateroles', 'joinleave']
+                valuesToParse.forEach(value => {
+                    server[value] = JSON.parse(server[value])
+                })
+                client.servers[server.id] = server
             })
-            client.servers = servers.getAll()
             
-            // Get hosts
-            const hostsArray = await client.query('SELECT * FROM `hosts`')
-            const hosts = {}
-            hostsArray.getAll().forEach(host => {
+            // Create client.hosts object
+            const hosts = await client.query('SELECT * FROM `hosts`')
+            client.hosts = {}
+            hosts.getAll().forEach(host => {
                 host.series = JSON.parse(host.series)
-                hosts[host.name] = host
+                client.hosts[host.name] = host
             })
-            client.hosts = hosts
 
             // Upcoming
             {
