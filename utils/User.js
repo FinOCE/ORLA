@@ -3,8 +3,7 @@ module.exports.User = class User {
         Object.keys(json).forEach(p => this[p] = json[p])
     }
     static async build(client, id) {
-        let sql = await client.query('SELECT * FROM `users` WHERE `id`="'+id+'"')
-        sql = sql.getFirst()
+        const sql = (await client.query('SELECT * FROM `users` WHERE `id`="'+id+'"')).getFirst()
         const discord = await client.users.fetch(id)
 
         if (typeof sql !== 'undefined') {
@@ -53,13 +52,11 @@ module.exports.User = class User {
                         take(amount) {client.query('UPDATE `users` SET `xp`=`xp`-'+amount+' WHERE `id`="'+sql.id+'"')},
                         set(amount) {client.query('UPDATE `users` SET `xp`='+amount+' WHERE `id`="'+sql.id+'"')},
                         update(message) {
-                            // Rewrite for User object context
-                            /*
                             const xproles = client.servers[message.guild.id].xproles
                             if (xproles !== null && level >= 5) {
                                 if (level >= 10) message.member.roles.remove(xproles[Math.floor(level/5)-2])
                                 message.member.roles.add(xproles[Math.floor(this.level/5)-1])
-                            }*/
+                            }
                         }
                     },
                     gotw: {
