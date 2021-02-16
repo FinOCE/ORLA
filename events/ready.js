@@ -3,7 +3,7 @@ module.exports = async (client) => {
     const moment = require('moment-timezone')
 
     // Start website if on development build
-    if (client.config.dev) {
+    if (process.env.dev) {
         const Website = require('../website/website')
         Website(client)
     }

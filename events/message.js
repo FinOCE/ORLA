@@ -5,7 +5,7 @@ module.exports = (client, message) => {
     if (message.channel.type === 'dm') return
 
     // Separate development bot channel actions
-    if (!message.channel.name.includes('dev-') || !message.guild.id === client.config.mainServer) return
+    if ((message.channel.name.includes('dev-') || message.guild.id !== client.config.mainServer) && process.env.dev) return
 
     // Don't run if message is sent by bot, or doesn't start with the prefix
     if (message.author.bot) return
