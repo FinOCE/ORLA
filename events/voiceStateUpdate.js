@@ -1,4 +1,4 @@
-module.exports = (client, from, to) => {
+module.exports = async (client, from, to) => {
     if (to.channelID !== null && to.channelID !== client.servers[to.guild.id].afk) {
         const {User} = require('../utils/User')
         const user = await User.build(client, to.id)
