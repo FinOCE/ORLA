@@ -3,10 +3,8 @@ module.exports = async (client) => {
     const moment = require('moment-timezone')
 
     // Start website if on development build
-    if (process.env.dev) {
-        const Website = require('../website/website')
-        Website(client)
-    }
+    const isDevBuild = (process.env.dev === 'true')
+    if (isDevBuild) require('../website/website')(client)
 
     // Set status and show the bot is running
     console.log('Bot is now online')

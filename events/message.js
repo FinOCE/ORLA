@@ -5,7 +5,7 @@ module.exports = (client, message) => {
     if (message.channel.type === 'dm') return
 
     // Separate development bot channel actions
-    if ((message.channel.name.includes('dev-') || message.guild.id !== client.config.mainServer) && process.env.dev) return
+    if ((message.channel.name.includes('dev-') || message.guild.id !== client.config.mainServer) && !process.env.dev) return
 
     // Don't run if message is sent by bot, or doesn't start with the prefix
     if (message.author.bot) return
@@ -14,12 +14,12 @@ module.exports = (client, message) => {
     if (!(message.author.id in client.xpFromMessage) && message.guild.id === '690588183683006465') {
         client.xpFromMessage.push([message.author.id])
 
-        (async () => {
+        {(async () => {
             const {User} = require('../utils/User')
             const user = await User.build(client, message.author.id)
             user.orla.xp.giveFromMessage()
             user.orla.xp.update(message)
-        })()
+        })()}
 
         client.setTimeout(() => {
             delete client.xpFromMessage[message.author.id]
