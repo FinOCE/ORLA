@@ -8,109 +8,82 @@ module.exports = {
 
 		const requestInitiated = moment().unix()
 
-		const accountInfo = {
-			"isReal": false
-		}
-
-		if (!(0 in args)) {
-			// if checking own rank
-			let query = await message.client.query('SELECT * FROM `users` WHERE `id`="'+message.author.id+'"')
-			const user = query.getFirst()
-
-			if (user.main !== null) {
-				// if account is linked
-				accountInfo['platform'] = user.main
-				accountInfo['account'] = user[user.main]
-				accountInfo['isReal'] = true
-			} else {
-				// if account is not linked
-				message.client.error('notLinked', message).send()
-				return
-			}
-		} else {
-			// if checking other player's rank
-			if (message.mentions.members.first()) {
-				// if checking via ping
-				let query = await message.client.query('SELECT * FROM `users` WHERE `id`="'+message.mentions.members.first().user.id+'"')
-				const user = query.getFirst()
-
-				if (user.main !== null) {
-					// if account is linked
-					accountInfo['platform'] = user.main
-					accountInfo['account'] = user[user.main]
-				} else {
-					// if account is not linked
-					message.client.error('notLinkedOther', message).send()
-					return
-				}
-			} else {
-				// if checking via platform and account
-				if (['pc', 'ps', 'xbox'].indexOf(args[0].toLowerCase()) === -1) {
-                    message.client.error('invalidPlatform', message).send()
-                    return
-                }
-                
-                if (!(1 in args)) {
-                    message.client.error('noPlayerSpecified', message).send()
-                    return
-				}
-				
-				accountInfo['platform'] = args[0].toLowerCase()
-				accountInfo['account'] = args[1]
-			}
-		}
-		const platforms = {steam: 'steam', pc: 'steam', xbox: 'xbl', ps: 'psn'}
-		accountInfo['platform'] = platforms[accountInfo['platform']]
+		// Determine the type of user the requested rank is from
+		const userType = (!(0 in args)) ?
+			'self'
+			:(!(1 in args) && message.mentions.members.first()) ?
+				'mention'
+				:(1 in args) ?
+					'other'
+					:null
 		
-		const loading = message.guild.emojis.cache.find(emoji => emoji.name === 'd_loading')
+		// Set the player's info based on type determined above
+		const playerInfo = {platform: null, id: null, self: false}
+		switch (userType) {
+			case 'self': {
+				// If user is checking their own rank
+				const user = (await message.client.query('SELECT * FROM `users` WHERE `id`="'+message.author.id+'"')).getFirst()
+				if (user.main === null) return message.client.error('notLinked', message).send()
 
-		message.channel.send(`${loading} Getting stats...`).then(async msg => {
-			// Don't bother looking for stats.js, its in the .gitignore
-			const {Stat} = require('../../utils/Stat')
-			const player = await Stat.build(message.client, accountInfo['platform'], accountInfo['account'])
-
-			if (player.valid) {
-				const Embed = new Discord.MessageEmbed()
-					.setColor(message.client.config.color)
-					.setFooter(`ORLA - Requested by ${message.author.tag}`, message.client.config.logo)
-					.setTitle(`RL Stats: ${player.user.name}`)
-					.setURL(player.user.statsURL)
-					.setThumbnail(player.user.avatarURL)
-
-				for (let i = 0; i < Object.keys(player.stats).length-1; i++) {
-					let stat = player.stats[Object.keys(player.stats)[i]]
-					
-					const percentile = `(Top ${Math.floor((100 - stat.percentile)*10)/10}%)`
-					const value = Number(Math.floor(stat.value*10)/10).toLocaleString('en')
-					const percentage = (stat.name === 'Goal Ratio') ? '%' : ''
-					const overall = Number(stat.overall).toLocaleString('en')
-
-					Embed.addField(`__${stat.name}__ *${percentile}*`, `${value}${percentage}\nGlobal: #${overall}`, true)
-				}
-
-				Embed.addField('First Season', player.stats.firstSeason, true)
-				Embed.addField("‎", "‎", true) // these have invisible characters in them
-
-				msg.edit(' ', Embed)
-			} else {
-				if (requestInitiated > (moment().unix() - 20)) {
-					const Embed = new Discord.MessageEmbed()
-						.setColor(message.client.config.color)
-						.setFooter(`ORLA - Requested by ${message.author.tag}`, message.client.config.logo)
-						.setTitle('Error: Profile Not Found')
-						.setDescription('The profile you searched for could not be found. Please try again.')
-					
-					msg.edit(' ', Embed)
-				} else {
-					const Embed = new Discord.MessageEmbed()
-						.setColor(message.client.config.color)
-						.setFooter(`ORLA - Requested by ${message.author.tag}`, message.client.config.logo)
-						.setTitle('Error: Request Timeout')
-						.setDescription('The server took too long to respond. Unfortunately we can\'t receive your account stats right now.')
-					
-					msg.edit(' ', Embed)
-				}
+				playerInfo.platform = user.main
+				playerInfo.id = user[user.main]
+				playerInfo.self = true
+				break
 			}
+			case 'mention': {
+				// If user is checking someone's rank by @mentioning them
+				const user = (await message.client.query('SELECT * FROM `users` WHERE `id`="'+message.mentions.members.first().user.id+'"')).getFirst()
+				if (user.main === null) return message.client.error('notLinkedOther', message).send()
+				
+				playerInfo.platform = user.main
+				playerInfo.id = user[user.main]
+				break
+			}
+			case 'other': {
+				// If user is checking someones rank from their platform and ID
+				if (['epic', 'steam', 'xbox', 'ps'].indexOf(args[0].toLowerCase()) === -1) return message.client.error('invalidPlatform', message).send()
+
+				playerInfo.platform = args[0].toLowerCase()
+				playerInfo.id = args[1]
+				break
+			}
+			default: return message.client.error('noPlayerSpecified', message).send()
+		}
+
+		// Send initial message to edit with response once received
+		const loading = message.client.guilds.cache.find(g => g.id === '690588183683006465').emojis.cache.find(e => e.name === 'd_loading')
+		message.channel.send(`${loading} Getting stats...`).then(async msg => {
+			const {Stat} = require('../../utils/Stat')
+			const player = await Stat.build(playerInfo)
+
+			// Send error if player not found or request is timed out
+			if (!player.valid) return msg.edit(' ', (requestInitiated+20 > moment().unix()) ?
+				message.client.error('profileNotFound', message).createEmbed()
+				:message.client.error('requestTimeout', message).createEmbed()
+			)
+
+			// Create Embed to fill with player data
+			const Embed = new Discord.MessageEmbed()
+				.setColor(message.client.config.color)
+				.setFooter(`ORLA - Requested by ${message.author.tag}`, message.client.config.logo)
+				.setTitle(`RL Stats: ${player.user.name}`)
+				.setURL(player.user.statsURL)
+				.setThumbnail(player.user.avatarURL)
+			
+			Object.values(player.stats).forEach(stat => {
+				const position = (stat.overall >= 1000) ? `Top ${Math.floor((100 - stat.percentile)*10)/10}%` : `#${stat.overall}`
+				const value = Number(Math.floor(stat.value*10)/10).toLocaleString('en')
+				const percentage = (stat.name === 'Goal Ratio') ? '%' : ''
+				const overall = Number(stat.overall).toLocaleString('en')
+
+				Embed.addField(`__${stat.name}__ *(${position})*`, `${value}${percentage}\nGlobal: #${overall}`, true)
+			})
+
+			Embed.addField("‎", "‎", true) // these have invisible characters in them
+			Embed.addField("‎", "‎", true) // these have invisible characters in them
+
+			// Edit message to include player data
+			msg.edit(' ', Embed)
 		})
 	}
 }
