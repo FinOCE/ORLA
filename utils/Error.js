@@ -29,11 +29,19 @@ module.exports.Error = class Error {
             },
             "invalidPlatform": {
                 "title": "Invalid Platform",
-                "description": "The platform you specified was not a valid option. The valid options are `pc`, `xbox`, and `ps`"
+                "description": "The platform you specified was not a valid option. The valid options are `steam`, `epic`, `xbox`, and `ps`"
             },
             "noPlayerSpecified": {
                 "title": "No Player Specified",
-                "description": 'To use this command, you need to specify the platform and account.'
+                "description": "To use this command, you need to specify the platform and account."
+            },
+            "profileNotFound": {
+                "title": "Profile Not Found",
+                "description": "The profile you searched for could not be found. Please try again."
+            },
+            "requestTimeout": {
+                "title": "Request Timeout",
+                "description": "The server took too long to respond. Unfortunately we can't receive your account stats right now."
             }
         }
 
@@ -52,5 +60,17 @@ module.exports.Error = class Error {
 
         // Send error message
         this.message.channel.send(Embed)
+    }
+    createEmbed() {
+        const Discord = require('discord.js')
+
+        // Build MessageEmbed
+        const Embed = new Discord.MessageEmbed()
+            .setColor(this.message.client.config.color)
+            .setFooter(`ORLA - Requested by ${this.message.author.tag}`, this.message.client.config.logo)
+            .setTitle('Error: ' + this.error.title)
+            .setDescription(this.error.description)
+        
+        return Embed
     }
 }
