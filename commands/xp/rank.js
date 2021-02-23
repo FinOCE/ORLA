@@ -5,37 +5,33 @@ module.exports = {
 	async run(message, args) {
 		const Discord = require('discord.js')
 
-		const user = await message.client.xp.getXP(message)
+		const member = (message.mentions.members.first()) ? message.mentions.members.first() : message.member
+		const nickname = (member.nickname) ? member.nickname : member.user.username
 
-		if (user) {
-			const member = (message.mentions.members.first()) ? message.mentions.members.first() : message.member
-			const nickname = (member.nickname) ? member.nickname : member.user.username
+		const {User} = require('../../utils/User')
+		const user = await User.build(message.client, member.user.id)
 
-			const xp = user[0].xp
-			const level = user[1][0]
-			const required = user[1][1]
-			const remaining = user[1][2]
-			const position = user[2]
+		const Embed = new Discord.MessageEmbed()
+			.setColor(message.client.config.color)
+			.setTitle(`${nickname} is level ${user.orla.xp.level}`)
+			.setThumbnail(user.discord.avatarURL)
+			.setFooter(`ORLA - Requested by ${message.author.tag}`, message.client.config.logo)
+		
+		const c_blue = message.client.guilds.cache.find(g => g.id === '690588183683006465').emojis.cache.find(e => e.name === 'c_blue')
+		const c_white = message.client.guilds.cache.find(g => g.id === '690588183683006465').emojis.cache.find(e => e.name === 'c_white')
 
-			const c_blue = message.guild.emojis.cache.find(emoji => emoji.name === 'c_blue')
-			const c_white = message.guild.emojis.cache.find(emoji => emoji.name === 'c_white')
+		let bar = ''
+        for (let i = 0; i < Math.round((user.orla.xp.progress.remaining/user.orla.xp.progress.cost)*10); i++) {
+            bar += `${c_blue}`
+        }
+        for (let i = 0; i < 10-Math.round((user.orla.xp.progress.remaining/user.orla.xp.progress.cost)*10); i++) {
+            bar += `${c_white}`
+        }
 
-			let bar = ''
-			for (let i = 0; i < Math.floor((remaining/required)*10); i++) {
-				bar += `${c_blue}`
-			}
-			for (let i = 0; i < 10-Math.floor((remaining/required)*10); i++) {
-				bar += `${c_white}`
-			}
+		const position = (await message.client.query('SELECT * FROM `users` WHERE `xp`>'+user.orla.xp.total)).getAll().length+1
 
-			const Embed = new Discord.MessageEmbed()
-				.setColor(message.client.config.color)
-				.setThumbnail(member.user.avatarURL())
-				.setTitle(`${nickname} is level ${level}`)
-				.setDescription(`${bar}\nTotal: **${xp}** - **${remaining}**/**${required}**\nPosition: **#${position}**`)
-				.setFooter(`ORLA - Requested by ${message.author.tag}`, message.client.config.logo)
-			
-			message.channel.send(Embed)
-		}
-    }
+		Embed.setDescription(`${bar}\nTotal: **${user.orla.xp.total}** - **${user.orla.xp.progress.remaining}**/**${user.orla.xp.progress.cost}**\nPosition: **#${position}**`)
+
+		message.channel.send(Embed)
+	}
 }
