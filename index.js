@@ -18,7 +18,7 @@ const { glob } = require('glob')
 const { parse } = require('path')
 
 // Load events
-glob('./events/*.js', (_, files) => {
+glob('./events/*.js', (err, files) => {
     files.forEach(file => {
         const {name} = parse(file)
         
@@ -29,7 +29,7 @@ glob('./events/*.js', (_, files) => {
 
 // Load commands
 client.commands = new Discord.Collection()
-glob('./commands/**/*.js', (_, files) => {
+glob('./commands/**/*.js', (err, files) => {
     files.forEach(file => {
         const {dir, name} = parse(file)
         const category = dir.split('/').pop()
