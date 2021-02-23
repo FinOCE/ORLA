@@ -1,154 +1,116 @@
 module.exports = {
 	desc: 'checks Rocket League rank stats',
 	syntax: '[platform] [account]',
-	//onlyORLA: true,
+	onlyORLA: true,
 	async run(message, args) {
 		const Discord = require('discord.js')
 		const moment = require('moment-timezone')
 
 		const requestInitiated = moment().unix()
 
-		const accountInfo = {
-			"isReal": false
-		}
+		// Determine the type of user the requested rank is from
+		const userType = (!(0 in args)) ?
+			'self'
+			:(!(1 in args) && message.mentions.members.first()) ?
+				'mention'
+				:(1 in args) ?
+					'other'
+					:null
+		
+		// Set the player's info based on type determined above
+		const playerInfo = {platform: null, id: null, self: false}
+		switch (userType) {
+			case 'self': {
+				// If user is checking their own rank
+				const user = (await message.client.query('SELECT * FROM `users` WHERE `id`="'+message.author.id+'"')).getFirst()
+				if (user.main === null) return message.client.error('notLinked', message).send()
 
-		if (!(0 in args)) {
-			// if checking own rank
-			let query = await message.client.query('SELECT * FROM `users` WHERE `id`="'+message.author.id+'"')
-			const user = query.getFirst()
-
-			if (user.main !== null) {
-				// if account is linked
-				accountInfo['platform'] = user.main
-				accountInfo['account'] = user[user.main]
-				accountInfo['isReal'] = true
-			} else {
-				// if account is not linked
-				message.client.error('notLinked', message).send()
-				return
+				playerInfo.platform = user.main
+				playerInfo.id = user[user.main]
+				playerInfo.self = true
+				break
 			}
-		} else {
-			// if checking other player's rank
-			if (message.mentions.members.first()) {
-				// if checking via ping
-				let query = await message.client.query('SELECT * FROM `users` WHERE `id`="'+message.mentions.members.first().user.id+'"')
-				const user = query.getFirst()
-
-				if (user.main !== null) {
-					// if account is linked
-					accountInfo['platform'] = user.main
-					accountInfo['account'] = user[user.main]
-				} else {
-					// if account is not linked
-					message.client.error('notLinkedOther', message).send()
-					return
-				}
-			} else {
-				// if checking via platform and account
-				if (['pc', 'ps', 'xbox'].indexOf(args[0].toLowerCase()) === -1) {
-                    message.client.error('invalidPlatform', message).send()
-                    return
-                }
-                
-                if (!(1 in args)) {
-                    message.client.error('noPlayerSpecified', message).send()
-                    return
-				}
+			case 'mention': {
+				// If user is checking someone's rank by @mentioning them
+				const user = (await message.client.query('SELECT * FROM `users` WHERE `id`="'+message.mentions.members.first().user.id+'"')).getFirst()
+				if (user.main === null) return message.client.error('notLinkedOther', message).send()
 				
-				accountInfo['platform'] = args[0].toLowerCase()
-				accountInfo['account'] = args[1]
+				playerInfo.platform = user.main
+				playerInfo.id = user[user.main]
+				break
 			}
+			case 'other': {
+				// If user is checking someones rank from their platform and ID
+				if (['epic', 'steam', 'xbox', 'ps'].indexOf(args[0].toLowerCase()) === -1) return message.client.error('invalidPlatform', message).send()
+
+				playerInfo.platform = args[0].toLowerCase()
+				playerInfo.id = args[1]
+				break
+			}
+			default: return message.client.error('noPlayerSpecified', message).send()
 		}
-		const platforms = {steam: 'steam', pc: 'steam', xbox: 'xbl', ps: 'psn'}
-		accountInfo['platform'] = platforms[accountInfo['platform']]
-		if (accountInfo.platform === 'steam') accountInfo.account = accountInfo.account.toLowerCase()
 
+		// Send initial message to edit with response once received
 		const loading = message.client.guilds.cache.find(g => g.id === '690588183683006465').emojis.cache.find(e => e.name === 'd_loading')
-
 		message.channel.send(`${loading} Getting rank...`).then(async msg => {
 			const {Stat} = require('../../utils/Stat')
-			const player = await Stat.build(message.client, accountInfo['platform'], accountInfo['account'])
+			const player = await Stat.build(playerInfo)
 
-			if (player.valid) {
-				const Embed = new Discord.MessageEmbed()
-					.setColor(message.client.config.color)
-					.setFooter(`ORLA - Requested by ${message.author.tag}`, message.client.config.logo)
-					.setTitle(`RL Stats: ${player.user.name}`)
-					.setURL(player.user.statsURL)
-					.setThumbnail(player.user.avatarURL)
+			// Send error if player not found or request is timed out
+			if (!player.valid) return msg.edit(' ', (requestInitiated+20 > moment().unix()) ?
+				message.client.error('profileNotFound', message).createEmbed()
+				:message.client.error('requestTimeout', message).createEmbed()
+			)
+
+			// Create Embed to fill with player data
+			const Embed = new Discord.MessageEmbed()
+				.setColor(message.client.config.color)
+				.setFooter(`ORLA - Requested by ${message.author.tag}`, message.client.config.logo)
+				.setTitle(`RL Stats: ${player.user.name}`)
+				.setURL(player.user.statsURL)
+				.setThumbnail(player.user.avatarURL)
+			
+			// Define rank codes and emoji names for later
+			const rankCodes = ['Unranked','BronzeI','BronzeII','BronzeIII','SilverI','SilverII','SilverIII','GoldI','GoldII','GoldIII','PlatinumI','PlatinumII','PlatinumIII','DiamondI','DiamondII','DiamondIII','ChampionI','ChampionII','ChampionIII','GrandChampionI','GrandChampionII','GrandChampionIII','SupersonicLegend']
+			const rankEmojis = ['00_unranked','01_bronze1','02_bronze2','03_bronze3','04_silver1','05_silver2','06_silver3','07_gold1','08_gold2','09_gold3','10_plat1','11_plat2','12_plat3','13_diamond1','14_diamond2','15_diamond3','16_champion1','17_champion2','18_champion3','19_grandchampion1','20_grandchampion2','21_grandchampion3','22_supersoniclegend']
+			const d_up = message.client.guilds.cache.find(g => g.id === '690588183683006465').emojis.cache.find(e => e.name === 'd_up')
+			const d_down = message.client.guilds.cache.find(g => g.id === '690588183683006465').emojis.cache.find(e => e.name === 'd_down')
+			
+			Object.values(player.modes).forEach(mode => {
+				const emote = message.client.guilds.cache.find(g => g.id === '690588183683006465').emojis.cache.find(e => e.name === rankEmojis[rankCodes.indexOf(mode.rank.replace(/ /g, ''))])
 				
-				let totalModes = 0
-				for (const i in player.modes) {
-					let mode = player.modes[i]
-					
-					const ranksList = ['Unranked','BronzeI','BronzeII','BronzeIII','SilverI','SilverII','SilverIII','GoldI','GoldII','GoldIII','PlatinumI','PlatinumII','PlatinumIII','DiamondI','DiamondII','DiamondIII','ChampionI','ChampionII','ChampionIII','GrandChampionI','GrandChampionII','GrandChampionIII','SupersonicLegend']
-					const ranksEmoji = ['00_unranked','01_bronze1','02_bronze2','03_bronze3','04_silver1','05_silver2','06_silver3','07_gold1','08_gold2','09_gold3','10_plat1','11_plat2','12_plat3','13_diamond1','14_diamond2','15_diamond3','16_champion1','17_champion2','18_champion3','19_grandchampion1','20_grandchampion2','21_grandchampion3','22_supersoniclegend']
-					let emote = ''
-					for (x = 0; x < ranksList.length; x++) {
-						if (mode.rank.replace(/ /g,'') == ranksList[x]) {
-							emote = message.client.guilds.cache.find(g => g.id === '690588183683006465').emojis.cache.find(e => e.name === ranksEmoji[x])
-						}
-					}
-					
-					d_up = message.client.guilds.cache.find(g => g.id === '690588183683006465').emojis.cache.find(e => e.name === 'd_up')
-					d_down = message.client.guilds.cache.find(g => g.id === '690588183683006465').emojis.cache.find(e => e.name === 'd_down')
-					
-					const rank = ((mode.rank === 'Supersonic Legend') || (mode.rank === 'Unranked')) ? `${emote} (${mode.mmr})` : `${emote} Div ${mode.division} (${mode.mmr})`
-					
-					let mmr = ''
-					if (mode.rank === 'Supersonic Legend') {
-						mmr = (mode.down !== undefined) ? `${d_down} ${mode.down}` : ''
-					} else {
-						mmr = ((mode.rank === 'Unranked') || (mode.down === undefined) || (mode.up === undefined)) ? '' : `${d_up} ${mode.up} ${d_down} ${mode.down}`
-					}
-					
-					const streak = (mode.streak > 0) ? `🔥 ${mode.streak}` : `❄️ ${String(mode.streak).replace('-','')}`
-					const games = (mode.name === 'Casual') ? '' : `🕐 ${mode.games} - ${streak}`
-					const position = (mode.overall >= 1000) ? `${Math.floor((100 - mode.percentile)*10)/10}%` : `#${mode.overall}`
-					
-					Embed.addField(`__${mode.name}__ *(Top ${position})*`, `${rank}\n${mmr}\n${games}`, true)
-					
-					totalModes += 1
-				}
-				
-				while (totalModes % 3 !== 0) {
-					Embed.addField("‎", "‎", true) // these have invisible characters in them
-					totalModes += 1
-				}
+				const position = (mode.overall >= 1000) ? `Top ${Math.floor((100 - mode.percentile)*10)/10}%` : `#${mode.overall}`
 
-				msg.edit(' ', Embed)
+				const rank = (['Supersonic Legend', 'Unranked'].indexOf(mode.rank) !== -1) ? `${emote} (${mode.mmr})` : `${emote} Div ${mode.division} (${mode.mmr})`
 
-				if (accountInfo['isReal'] === true) {
-					let query = await message.client.query('SELECT `rankroles` FROM `servers` WHERE `id`="'+message.channel.guild.id+'"')
-					const rankID = JSON.parse(query.getFirst())
-					
-					if (rankID !== null) {
-						for (i in rankID) {
-							if (message.member.roles.cache.some(role => role.id === rankID[i])) {
-								message.member.roles.remove(rankID[i])
-							}
-						}
-						message.member.roles.add(rankID[player.highestRank().value-1])
-					}
-				}
-			} else {
-				if (requestInitiated > (moment().unix() - 20)) {
-					const Embed = new Discord.MessageEmbed()
-						.setColor(message.client.config.color)
-						.setFooter(`ORLA - Requested by ${message.author.tag}`, message.client.config.logo)
-						.setTitle('Error: Profile Not Found')
-						.setDescription('The profile you searched for could not be found. Please try again.')
-					
-					msg.edit(' ', Embed)
-				} else {
-					const Embed = new Discord.MessageEmbed()
-						.setColor(message.client.config.color)
-						.setFooter(`ORLA - Requested by ${message.author.tag}`, message.client.config.logo)
-						.setTitle('Error: Request Timeout')
-						.setDescription('The server took too long to respond. Unfortunately we can\'t receive your account stats right now.')
-					
-					msg.edit(' ', Embed)
-				}
+				const mmr = (mode.rank === 'Supersonic Legend') ?
+					(mode.down === undefined) ?
+						''
+						:`${d_down} ${mode.down}`
+					:((mode.rank === 'Unranked') || (mode.down === undefined) || (mode.up === undefined)) ?
+						''
+						:`${d_up} ${mode.up} ${d_down} ${mode.down}`
+
+				const streak = (mode.streak > 0) ? `🔥 ${mode.streak}` : `❄️ ${String(mode.streak).replace('-','')}`
+				const games = (mode.name === 'Casual') ? '' : `🕐 ${mode.games} - ${streak}`
+
+				Embed.addField(`__${mode.name}__ *(${position})*`, `${rank}\n${mmr}\n${games}`, true)
+			})
+
+			// Add fields to evenly display ranks
+			let blankFields = 0
+			while ((Object.keys(player.modes).length + blankFields) % 3 !== 0) {
+				Embed.addField("‎", "‎", true) // Contains invisible characters to make blank fields
+				blankFields++
+			}
+			
+			// Edit message to include player data
+			msg.edit(' ', Embed)
+
+			// Set role for rank if checking own rank
+			if (playerInfo.self) {
+				const ranks = JSON.parse((await message.client.query('SELECT `rankroles` FROM `servers` WHERE `id`="'+message.guild.id+'"')).getFirst())
+				message.member.roles.remove(ranks).then(() => message.member.roles.add(ranks[player.highestRank().value-1]))
 			}
 		})
 	}
