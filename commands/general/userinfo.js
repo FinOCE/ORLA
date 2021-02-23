@@ -21,8 +21,7 @@ module.exports = {
         if (user.orla.url !== null) Embed.setDescription(user.orla.url)
 
         // Add XP widget
-        let position = await message.client.query('SELECT * FROM `users` WHERE `xp`>'+user.orla.xp.total)
-        position = position.getAll().length+1
+        const position = (await message.client.query('SELECT * FROM `users` WHERE `xp`>'+user.orla.xp.total)).getAll().length+1
 
         const c_b = message.client.guilds.cache.find(g => g.id === '690588183683006465').emojis.cache.find(e => e.name === 'c_b')
         const c_w = message.client.guilds.cache.find(g => g.id === '690588183683006465').emojis.cache.find(e => e.name === 'c_w')
