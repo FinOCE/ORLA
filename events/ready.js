@@ -39,8 +39,7 @@ module.exports = async (client) => {
                 const events = await client.query('SELECT * FROM `tournaments` WHERE `ttime`>'+moment().unix())
                 events.getAll().sort((a, b) => {return a.ttime - b.ttime})
 
-                Object.keys(client.servers).forEach(async i => {
-                    const server = client.servers[i]
+                Object.values(client.servers).forEach(async server => {
                     if (server.upcoming !== null) {
                         const hours = Math.floor(moment.tz(server.timezone).utcOffset() / 60)
                         const minutes = (moment.tz(server.timezone).utcOffset() % 60 > 0) ? `:${moment.tz(server.timezone).utcOffset() % 60}` : ''
@@ -54,7 +53,7 @@ module.exports = async (client) => {
                             .setTimestamp()
                         
                         events.getAll().forEach(async eventData => {
-                            const event = await Event.build(client, [eventData])
+                            const event = await Event.build(client, eventData)
                             
                             const icon = client.emojis.cache.get(client.hosts[event.host.code].emoji)
                             Embed.addField(event.getUpcomingTitle(icon), event.getUpcomingMessage(server))
@@ -72,7 +71,7 @@ module.exports = async (client) => {
                 const events = await client.query('SELECT * FROM `tournaments` WHERE `announced`=0 AND `ttime`>'+moment().unix())
 
                 events.getAll().forEach(async eventData => {
-                    const event = await Event.build(client, [eventData])
+                    const event = await Event.build(client, eventData)
                     event.announce(client)
                 })
             }
@@ -82,7 +81,7 @@ module.exports = async (client) => {
                 const events = await client.query('SELECT * FROM `tournaments` WHERE `reminded`=0 AND `rtime`<3600+'+moment().unix()+' AND `ttime`>'+moment().unix())
 
                 events.getAll().forEach(async eventData => {
-                    const event = await Event.build(client, [eventData])
+                    const event = await Event.build(client, eventData)
                     event.notify(client)
                 })
             }

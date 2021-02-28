@@ -7,12 +7,11 @@ module.exports.Event = class Event {
     static async build(client, sql) {
         const event = {}
 
-        // Define host and series for cleaner code
         const host = client.hosts[sql.host]
-        const series = host.series[sql.series]
         
         // Add series info if provided
-        if (sql.series !== null) {
+        if (sql.series !== 'null') {
+            const series = host.series[sql.series]
             event.series = {
                 code: sql.series,
                 name: series.title,
@@ -77,7 +76,7 @@ module.exports.Event = class Event {
         const Discord = require('discord.js')
         const moment = require('moment-timezone')
 
-        client.servers.forEach(server => {
+        Object.values(client.servers).forEach(server => {
             if (server.announcements !== null) {
                 const Embed = new Discord.MessageEmbed()
                     .setColor(this.host.color)
@@ -115,7 +114,7 @@ module.exports.Event = class Event {
         const Discord = require('discord.js')
         const moment = require('moment-timezone')
 
-        client.servers.forEach(server => {
+        Object.values(client.servers).forEach(server => {
             if (server.notifications !== null) {
                 const Embed = new Discord.MessageEmbed()
                     .setColor(this.host.color)
