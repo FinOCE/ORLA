@@ -62,8 +62,8 @@ module.exports.User = class User {
                         update(message) {
                             const xproles = client.servers[message.guild.id].xproles
                             if (xproles !== null && level >= 5) {
-                                if (level >= 10) message.member.roles.remove(xproles[Math.floor(level/5)-2])
-                                message.member.roles.add(xproles[Math.floor(this.level/5)-1])
+                                if (level >= 10 && level < 35) message.member.roles.remove(xproles[Math.floor(level/5)-2])
+                                if (level < 35) message.member.roles.add(xproles[Math.floor(this.level/5)-1])
                             }
                         }
                     },
