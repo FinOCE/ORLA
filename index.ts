@@ -1,24 +1,28 @@
-const Discord = require('discord.js')
-const client = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION'] })
+// Create Discord client
+import Discord from 'discord.js'
+const client: any = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION'] })
 client.config = require('./config.json')
-const {Error} = require('./utils/Error')
-client.error = (method, message) => new Error(method, message)
+
+// Error function
+import {Error} from './utils/Error'
+client.error = (method: string, message: object) => new Error(method, message)
 
 // SQL Function
 const {Database} = require('./utils/Database')
-client.query = (sql) => Database.query(sql)
+client.query = (sql: string) => Database.query(sql)
 
 // Set XP timer storage for messages and voice chats
 client.xpFromMessage = []
 client.xpFromVoice = {}
 
+// Import modules
 require('dotenv').config()
-
 const { glob } = require('glob')
-const { parse } = require('path')
+import {parse} from 'path'
 
 // Load events
-glob('./events/*.js', (err, files) => {
+glob('./events/*.js', (err: string, files: Array<string>) => {
+    if (err) throw err
     files.forEach(file => {
         const {name} = parse(file)
         
@@ -29,7 +33,8 @@ glob('./events/*.js', (err, files) => {
 
 // Load commands
 client.commands = new Discord.Collection()
-glob('./commands/**/*.js', (err, files) => {
+glob('./commands/**/*.js', (err: string, files: string[]) => {
+    if (err) throw err
     files.forEach(file => {
         const {dir, name} = parse(file)
         const category = dir.split('/').pop()
