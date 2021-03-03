@@ -9,7 +9,8 @@ import {Database} from './utils/Database'
 Object.assign(client, {
     config: require('./config.json'),
     error: (method: string, message: object) => new Error(method, message),
-    query: (sql: string) => Database.query(sql)
+    query: (sql: string) => Database.query(sql),
+    commands: new Discord.Collection()
 })
 
 // Import modules
@@ -29,8 +30,7 @@ glob('./events/+(*.js|*.ts)', (err: string, files: Array<string>) => {
 })
 
 // Load commands
-client.commands = new Discord.Collection()
-glob('./commands/**/+(*.js|*.ts)', (err: string, files: string[]) => {
+glob('./commands/**/+(*.js|*.ts)', (err: string, files: Array<string>) => {
     if (err) throw err
     files.forEach(file => {
         const {dir, name} = parse(file)
