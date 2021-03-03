@@ -5,7 +5,7 @@ import {Database} from './Database'
 
 export default class Client extends ClientJS {
     commands: Collection<string, Function>
-    config: object
+    config: Record<string, string>
 
     constructor(options?: ClientOptions) {
         super(options)
