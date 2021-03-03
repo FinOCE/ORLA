@@ -35,6 +35,7 @@ module.exports.Event = class Event {
             name: sql.title,
             URL: sql.link,
             customURL: `https://orla.pro/events/${sql.redirect}`,
+            streamURL: sql.stream,
             open: (sql.topen === 1),
             mode: sql.mode,
             prize: sql.prize,
