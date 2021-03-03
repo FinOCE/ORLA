@@ -1,17 +1,6 @@
 // Create Discord client
-import Discord from 'discord.js'
-const client: any = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION'] })
-
-// Add functions and config to client object
-import {Error} from './utils/Error'
-import {Database} from './utils/Database'
-
-Object.assign(client, {
-    config: require('./config.json'),
-    error: (method: string, message: object) => new Error(method, message),
-    query: (sql: string) => Database.query(sql),
-    commands: new Discord.Collection()
-})
+import Client from './utils/Client'
+const client: Client = new Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION'] })
 
 // Import modules
 require('dotenv').config()
