@@ -1,10 +1,11 @@
 import {Client as ClientJS, Collection, ClientOptions} from 'discord.js'
 
+import {CommandOptions} from './Command'
 import {Error} from './Error'
 import {Database} from './Database'
 
 export default class Client extends ClientJS {
-    commands: Collection<string, Function>
+    commands: Collection<string, CommandOptions>
     config: Record<string, string>
 
     constructor(options?: ClientOptions) {
