@@ -10,6 +10,10 @@ module.exports = async (client) => {
     console.log('Bot is now online')
     client.user.setActivity('orla.pro | .help', {type: 'WATCHING'})
 
+    // Set XP timer storage for messages and voice chats
+    client.xpFromMessage = []
+    client.xpFromVoice = {}
+
     // Execute functions on an interval
     client.setInterval(function update() {
         (async () => {

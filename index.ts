@@ -11,10 +11,6 @@ client.error = (method: string, message: object) => new Error(method, message)
 const {Database} = require('./utils/Database')
 client.query = (sql: string) => Database.query(sql)
 
-// Set XP timer storage for messages and voice chats
-client.xpFromMessage = []
-client.xpFromVoice = {}
-
 // Import modules
 require('dotenv').config()
 const { glob } = require('glob')
