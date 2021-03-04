@@ -20,6 +20,7 @@ export default class Client extends ClientJS {
             files.map(f => {return `.${f}`}).forEach(file => {
                 const {dir, name} = parse(file)
                 const category = dir.split('/').pop()
+
                 if (file.endsWith('js')) {
                     // JavaScript commands
                     const command = require(file)
@@ -38,9 +39,15 @@ export default class Client extends ClientJS {
             if (err) throw err
             files.map(f => {return `.${f}`}).forEach(file => {
                 const {name} = parse(file)
-                
-                const event = require(file)
-                this.on(name, event.bind(null, this))
+
+                if (file.endsWith('js')) {
+                    const event = require(file)
+                    this.on(name, event.bind(null, this))
+                } else if (file.endsWith('ts')) {
+                    const Event = require(file).default
+                    const event = new Event(this)
+                    this.on(name, event.run)
+                }
             })
         })
     }
