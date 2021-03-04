@@ -10,8 +10,8 @@ export default class ClearCommand extends Command {
     run(message: Message, args: Array<string>) {
         // Check if the amount specified is valid
         const n = parseInt(args[0])
-        if (isNaN(n) || n < 1 || n > 100) return this.client.error('invalidSyntax', message).send();
+        if (isNaN(n) || n < 1 || n > 100) return this.client.error('invalidSyntax', message).send()
 
-        (message.channel! as TextChannel).bulkDelete(n, true).catch(() => this.client.error('somethingWentWrong', message).send())
+        {(message.channel! as TextChannel).bulkDelete(n, true).catch(() => this.client.error('somethingWentWrong', message).send())}
     }
 }
