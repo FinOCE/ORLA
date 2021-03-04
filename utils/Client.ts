@@ -15,28 +15,26 @@ export default class Client extends ClientJS {
         this.commands = new Collection()
         this.config = require('../config.json')
 
-        glob('./commands/**/*+(.j|.t)s', (err: string, files: Array<string>) => {
+        glob('./commands/**/*+(.js|.ts)', (err: string, files: Array<string>) => {
             if (err) throw err
             files.map(f => {return `.${f}`}).forEach(file => {
+                const {dir, name} = parse(file)
+                const category = dir.split('/').pop()
                 if (file.endsWith('js')) {
-                    const {dir, name} = parse(file)
-                    const category = dir.split('/').pop()
-                    
+                    // JavaScript commands
                     const command = require(file)
                     Object.assign(command, {category, name})
                     this.commands.set(name, command)
                 } else if (file.endsWith('ts')) {
-                    const File = require(file).default
-                    if (File && File.prototype instanceof Command) {
-                        const command: Command = new File
-                        command.client = this
-                        this.commands.set(command.name, command)
-                    }
+                    // TypeScript commands
+                    const Command = require(file).default
+                    const command = new Command(this, {name, category})
+                    this.commands.set(name, command)
                 }
             })
         })
 
-        glob('./events/*+(.j|.t)s', (err: string, files: Array<string>) => {
+        glob('./events/*+(.js|.ts)', (err: string, files: Array<string>) => {
             if (err) throw err
             files.map(f => {return `.${f}`}).forEach(file => {
                 const {name} = parse(file)

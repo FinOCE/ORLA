@@ -17,5 +17,5 @@ export default abstract class Command implements CommandOptions {
         this.category = options.category
     }
 
-    abstract execute(message: Message, args?: Array<string>): void | Promise<void>
+    abstract run(message: Message, args?: Array<string>): void | Promise<void>
 }
