@@ -1,7 +1,8 @@
-module.exports.Event = class Event {
+module.exports.Tournament = class Tournament {
     // ----- Setup -----
     constructor(client, json={}) {
         this.client = client
+        this.host = json.host // temporary to make ready.ts work
         Object.keys(json).forEach(p => this[p] = json[p])
     }
     static async build(client, sql) {
@@ -45,7 +46,7 @@ module.exports.Event = class Event {
             registrationTime: sql.rtime
         })
 
-        return new Event(client, event)
+        return new Tournament(client, event)
     }
 
     // ----- Queries -----

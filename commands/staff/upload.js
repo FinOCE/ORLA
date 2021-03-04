@@ -6,8 +6,8 @@ module.exports = {
 		const Discord = require('discord.js')
 		const moment = require('moment-timezone')
 
-		const {Event} = require('../../utils/Event')
-		const event = new Event()
+		const {Tournament} = require('../../utils/Tournament')
+		const event = new Tournament()
 
 		new Promise(async (resolve, reject) => {
 			// ----- NAME ----
