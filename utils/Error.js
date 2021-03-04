@@ -17,6 +17,10 @@ module.exports.Error = class Error {
                 "title": "Command not Available",
                 "description": "Sorry, but that command is not available on this server."
             },
+            "somethingWentWrong": {
+                "title": "Something Went Wrong",
+                "description": `Sorry ${message.author}, but something wront wrong when trying to run that command.`
+            },
 
             // rlrank and rlsetup
             "notLinked": {
