@@ -1,11 +1,7 @@
 import Client from './Client'
 
 export default abstract class Event {
-    client: Client
-
-    constructor(client: Client) {
-        this.client = client
-    }
+    constructor() {}
     
-    abstract run(...args: Array<any>): void | Promise<void>
+    abstract run(client: Client, ...args: Array<any>): void | Promise<void>
 }

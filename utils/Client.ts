@@ -9,11 +9,15 @@ import {Database} from './Database'
 export default class Client extends ClientJS {
     commands: Collection<string, CommandOptions>
     config: Record<string, string>
+    xpFromVoice: Record<string, void>
+    xpFromMessage: Array<string>
 
     constructor(options?: ClientOptions) {
         super(options)
         this.commands = new Collection()
         this.config = require('../config.json')
+        this.xpFromVoice = {}
+        this.xpFromMessage = []
 
         glob('./commands/**/*+(.js|.ts)', (err: string, files: Array<string>) => {
             if (err) throw err
@@ -46,7 +50,7 @@ export default class Client extends ClientJS {
                 } else if (file.endsWith('ts')) {
                     const Event = require(file).default
                     const event = new Event(this)
-                    this.on(name, event.run)
+                    this.on(name, event.run.bind(null, this))
                 }
             })
         })
