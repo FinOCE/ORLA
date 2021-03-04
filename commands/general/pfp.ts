@@ -8,8 +8,7 @@ export default class PfpCommand extends Command {
     }
 
     run(message: Message, args: Array<string>) {
-        if (!message.member) return
-        const member: GuildMember = message.mentions.members?.first() || message.member
+        const member: GuildMember = message.mentions.members?.first() ?? message.member!
         const Embed: MessageEmbed = new MessageEmbed()
             .setTitle(`${member.user.tag}`)
             .setImage(member.user.avatarURL() || '')
