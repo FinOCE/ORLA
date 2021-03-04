@@ -11,6 +11,8 @@ export default class Client extends ClientJS {
     config: Record<string, string>
     xpFromVoice: Record<string, void>
     xpFromMessage: Array<string>
+    servers: Record<string, any>
+    hosts: Record<string, any>
 
     constructor(options?: ClientOptions) {
         super(options)
@@ -18,6 +20,8 @@ export default class Client extends ClientJS {
         this.config = require('../config.json')
         this.xpFromVoice = {}
         this.xpFromMessage = []
+        this.servers = {}
+        this.hosts = {}
 
         glob('./commands/**/*+(.js|.ts)', (err: string, files: Array<string>) => {
             if (err) throw err
@@ -49,7 +53,7 @@ export default class Client extends ClientJS {
                     this.on(name, event.bind(null, this))
                 } else if (file.endsWith('ts')) {
                     const Event = require(file).default
-                    const event = new Event(this)
+                    const event = new Event()
                     this.on(name, event.run.bind(null, this))
                 }
             })
