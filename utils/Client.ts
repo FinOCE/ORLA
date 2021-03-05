@@ -36,8 +36,7 @@ export default class Client extends ClientJS {
                     this.commands.set(name, command)
                 } else if (file.endsWith('ts')) {
                     // TypeScript commands
-                    const Command = require(file).default
-                    const command = new Command(this, {name, category})
+                    const command = new (require(file).default)(this, {name, category})
                     this.commands.set(name, command)
                 }
             })
