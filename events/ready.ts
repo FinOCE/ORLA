@@ -2,7 +2,7 @@ import {MessageEmbed, TextChannel} from 'discord.js'
 import moment from 'moment-timezone'
 import Client from '../utils/Client'
 import Event from '../utils/Event'
-import {Tournament} from '../utils/Tournament'
+import Tournament from '../utils/Tournament'
 
 export default abstract class Ready extends Event {
     constructor(client: Client) {
@@ -15,8 +15,9 @@ export default abstract class Ready extends Event {
 
         // Start website if running development build
         if (process.env.dev === 'true') require('../website/website')(this.client)
-        
-        this.client.setInterval(function u(client: Client) {
+
+        const client = this.client
+        this.client.setInterval(function u() {
             (async () => {
                 // Update client.servers
                 {(await client.query('SELECT * FROM `servers`'))?.getAll().forEach((server: Record<string, string>) => {
@@ -35,13 +36,13 @@ export default abstract class Ready extends Event {
                 // Annoucements
                 const announcementsQuery = 'SELECT * FROM `tournaments` WHERE `announced`=0 AND `ttime`>'+moment().unix()
                 {(await client.query(announcementsQuery))?.getAll().forEach(async (tournament: Record<string, string>) => {
-                    (await Tournament.build(client, tournament)).announce(client)
+                    (new Tournament(client, tournament)).announce()
                 })}
 
                 // Notifications
                 const notificationQuery = 'SELECT * FROM `tournaments` WHERE `reminded`=0 AND `rtime`<3600+'+moment().unix()+' AND `ttime`>'+moment().unix()
                 {(await client.query(notificationQuery))?.getAll().forEach(async (tournament: Record<string, string>) => {
-                    (await Tournament.build(client, tournament)).notify(client)
+                    (new Tournament(client, tournament)).notify()
                 })}
 
                 // Upcoming
@@ -56,7 +57,7 @@ export default abstract class Ready extends Event {
                     const tzMinutes = (moment.tz(server.timezone).utcOffset() % 60 > 0) ? `:${moment.tz(server.timezone).utcOffset() % 60}` : ''
                     const tzOffset = (tzHours >= 0) ? `+${tzHours}${tzMinutes}` : `${tzHours}${tzMinutes}`
 
-                    const Embed = new MessageEmbed()
+                    let Embed = new MessageEmbed()
                         .setColor(client.config.color)
                         .setFooter('Last Updated')
                         .setTimestamp()
@@ -66,17 +67,20 @@ export default abstract class Ready extends Event {
                     // Add content to Embed
                     if (tournaments.length === 0) Embed.setDescription('Unfortunately no events have been announced yet.')
                     tournaments.forEach(async (tournament: Record<string, string>) => {
-                        const event = await Tournament.build(client, tournament)
-                            
-                        const icon = client.emojis.cache.get(client.hosts[event.host.code].emoji)
-                        Embed.addField(event.getUpcomingTitle(icon), event.getUpcomingMessage(server))
+                        const event = new Tournament(client, tournament)
+                        Embed = event.addUpcomingField(Embed, server)
                     })
                     
                     // Fetch server's upcoming message and edit to update content
-                    {(client.channels!.cache!.get(server.upcoming.channelID)! as TextChannel).messages.fetch(server.upcoming.messageID).then(msg => msg.edit(Embed))}
+                    const channel = client.channels.cache.get(server.upcoming.channelID)
+                    if (channel) {
+                        (channel as TextChannel).messages.fetch(server.upcoming.messageID).then(msg => {
+                            if (msg) msg.edit(Embed)
+                        })
+                    }
                 })
             })()
             return u
-        }(this.client), Number(this.client.config.timeout) * 1000)
+        }(), Number(this.client.config.timeout) * 1000)
     }
 }

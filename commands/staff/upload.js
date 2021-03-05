@@ -5,18 +5,19 @@ module.exports = {
 	async run(message, args) {
 		const Discord = require('discord.js')
 		const moment = require('moment-timezone')
+		const Tournament = require('../../utils/Tournament').default
 
-		const {Tournament} = require('../../utils/Tournament')
-		const event = new Tournament()
-
+		const event = {}//new (require('../../utils/Tournament').default)			
 		new Promise(async (resolve, reject) => {
 			// ----- NAME ----
-			event.name = await event.query(message, 'What is the name of the tournament?')
+			event.name = await Tournament.query(message, 'What is the name of the tournament?')
+			if (!event.name) return
 
 			// ----- HOST & SERIES -----
 			let validHost = false
 			while (validHost == false) {
-				const backend = await event.query(message, 'What is the series/host code?')
+				const backend = await Tournament.query(message, 'What is the series/host code?')
+				if (!backend) return
 				let query = await message.client.query('SELECT * FROM `hosts` WHERE `series` LIKE "%'+backend+'%"')
 
 				const seriesToCheck = {}
@@ -66,7 +67,8 @@ module.exports = {
 						while (validNumber == false) {
 							message.channel.send(`We found multiple series/hosts with that string included in their code, which one did you mean?\n${list}`)
 
-							option = await event.query(message)
+							option = await Tournament.query(message)
+							if (!option) return
 							if (!isNaN(option) && (option <= Object.keys(seriesToCheck).length + hostsToCheck.length) && (option > 0)) {
 								validNumber = true
 							} else {
@@ -91,29 +93,36 @@ module.exports = {
 			}
 
 			// ----- MODE -----
-			event.mode = await event.query(message, 'What mode is the event?')
+			event.mode = await Tournament.query(message, 'What mode is the event?')
+			if (!event.mode) return
 
 			// ----- URL -----
-			event.URL = await event.query(message, 'What is the URL to the registration page?')
+			event.URL = await Tournament.query(message, 'What is the URL to the registration page?')
+			if (!event.URL) return
 
 			// ----- CUSTOM URL -----
-			event.customURL = await event.query(message, 'What do you want the custom URL to be for the ORLA redirect?')
+			event.customURL = await Tournament.query(message, 'What do you want the custom URL to be for the ORLA redirect?')
+			if (!event.customURL) return
 
 			// ----- STREAM URL -----
-			const streamURL = await event.query(message, 'What is the URL to the stream page? If there is none, type anything except a link.')
+			const streamURL = await Tournament.query(message, 'What is the URL to the stream page? If there is none, type anything except a link.')
+			if (!event.streamURL) return
 			event.streamURL = (streamURL.toLowerCase().indexOf('http') !== -1) ? streamURL : null
 
 			// ----- PRIZE -----
-			event.prize = await event.query(message, 'What is the total prize pool for the event?')
+			event.prize = await Tournament.query(message, 'What is the total prize pool for the event?')
+			if (!event.prize) return
 
 			// ----- OPEN -----
-			const open = await event.query(message, 'Is the event open for anyone to join? If so, type anything including the letter Y.')
+			const open = await Tournament.query(message, 'Is the event open for anyone to join? If so, type anything including the letter Y.')
+			if (!event.open) return
 			event.open = (open.toLowerCase().includes('y'))
 
 			// ----- START TIME -----
 			let validStartTime = false
 			while (validStartTime == false) {
-				startTime = await event.query(message, 'When does the event start? *(format like: 16/3 18:00 +11)*')
+				startTime = await Tournament.query(message, 'When does the event start? *(format like: 16/3 18:00 +11)*')
+				if (!startTime) return
 				if (/\d+\/\d+\s\d+:\d{2}\s\+\d{2}/.test(startTime)) {
 					validStartTime = true
 					const time = {
@@ -132,7 +141,8 @@ module.exports = {
 			// ----- REGISTRATION TIME -----
 			let validRegistrationTime = false
 			while (validRegistrationTime == false) {
-				registrationTime = await event.query(message, 'When does registration close? *(format like: 16/3 18:00 +11)*')
+				registrationTime = await Tournament.query(message, 'When does registration close? *(format like: 16/3 18:00 +11)*')
+				if (!registrationTime) return
 				if (/\d+\/\d+\s\d+:\d{2}\s\+\d{2}/.test(startTime)) {
 					validRegistrationTime = true
 					const time = {
@@ -149,7 +159,8 @@ module.exports = {
 				}
 			}
 		}).then(async (event) => {
-			const submit = await event.query(message, 'Is this correct? If yes, type anything including the letter Y.\n```js\n'+JSON.stringify(event, null, 4)+'\n```')
+			const submit = await Tournament.query(message, 'Is this correct? If yes, type anything including the letter Y.\n```js\n'+JSON.stringify(event, null, 4)+'\n```')
+			if (!submit) return
 			if (submit.toLowerCase().includes('y')) {
 				let topen = (event.open) ? 1 : 0
 				message.client.query('INSERT INTO `tournaments` VALUES("'+event.name+'", "'+event.series+'", "'+event.host+'", "'+event.mode+'", "'+event.startTime+'", "'+topen+'", "'+event.URL+'", "'+event.customURL+'", "'+event.prize+'", "'+event.registrationTime+'", "'+event.streamURL+'", 0, 0)')
