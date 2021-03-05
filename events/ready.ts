@@ -4,19 +4,19 @@ import Client from '../utils/Client'
 import Event from '../utils/Event'
 import {Tournament} from '../utils/Tournament'
 
-export default class Ready extends Event {
-    constructor() {
-        super()
+export default abstract class Ready extends Event {
+    constructor(client: Client) {
+        super(client)
     }
 
-    run(client: Client) {
+    run() {
         console.log('Bot is now online')
-        client.user!.setActivity('orla.pro | .help', {type: 'WATCHING'})
+        this.client.user!.setActivity('orla.pro | .help', {type: 'WATCHING'})
 
         // Start website if running development build
-        if (process.env.dev === 'true') require('../website/website')(client)
+        if (process.env.dev === 'true') require('../website/website')(this.client)
         
-        client.setInterval(function u() {
+        this.client.setInterval(function u(client: Client) {
             (async () => {
                 // Update client.servers
                 {(await client.query('SELECT * FROM `servers`'))?.getAll().forEach((server: Record<string, string>) => {
@@ -48,7 +48,7 @@ export default class Ready extends Event {
                 const tournaments = (await client.query('SELECT * FROM `tournaments` WHERE `ttime`>'+moment().unix()))?.getAll()
                 tournaments.sort((a: Record<string, any>, b: Record<string, any>) => {return Number(a.ttime) - Number(b.ttime)})
 
-                Object.values(client.servers).forEach(async server => {
+                Object.values(client.servers).forEach(async (server: Record<string, any>) => {
                     if (server.upcoming === null) return
 
                     // Get timezone offset in correct format
@@ -77,6 +77,6 @@ export default class Ready extends Event {
                 })
             })()
             return u
-        }(), Number(client.config.timeout) * 1000)
+        }(this.client), Number(this.client.config.timeout) * 1000)
     }
 }

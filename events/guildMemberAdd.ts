@@ -2,13 +2,13 @@ import {GuildMember, TextChannel} from 'discord.js'
 import Client from '../utils/Client'
 import Event from '../utils/Event'
 
-export default class Ready extends Event {
-    constructor() {
-        super()
+export default abstract class guildMemberAdd extends Event {
+    constructor(client: Client) {
+        super(client)
     }
 
-    run(client: Client, member: GuildMember) {
-        const server = client.servers[member.guild.id]
+    run(member: GuildMember) {
+        const server = this.client.servers[member.guild.id]
 
         // Give user autoroles
         if (server.autorole) {
@@ -19,13 +19,13 @@ export default class Ready extends Event {
 
         // Send message to join/leave channel
         if (server.joinleave?.text) {
-            const channel = client.channels.cache.find(channels => channels.id === server.joinleave.text)
+            const channel = this.client.channels.cache.find(channels => channels.id === server.joinleave.text)
             {(channel! as TextChannel).send(`${member.user} has **joined** the server`)}
         }
 
         // Update member counter
         if (server.joinleave?.counter) {
-            const counter = client.channels.cache.find(c => c.id === server.joinleave.counter)
+            const counter = this.client.channels.cache.find(c => c.id === server.joinleave.counter)
             {(counter! as TextChannel).setName(`Members: ${member.guild.memberCount-1}`)}
         }
     }

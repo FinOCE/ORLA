@@ -1,4 +1,4 @@
-import {Client as ClientJS, Collection, ClientOptions} from 'discord.js'
+import {Client as ClientJS, Collection, ClientOptions, Message} from 'discord.js'
 const {glob} = require('glob')
 import {parse} from 'path'
 
@@ -52,15 +52,14 @@ export default class Client extends ClientJS {
                     const event = require(file)
                     this.on(name, event.bind(null, this))
                 } else if (file.endsWith('ts')) {
-                    const Event = require(file).default
-                    const event = new Event()
-                    this.on(name, event.run.bind(null, this))
+                    const event = new (require(file).default)(this)
+                    this.on(name, (...args) => event.run(...args))
                 }
             })
         })
     }
 
-    error(method: string, message: object) {
+    error(method: string, message: Message) {
         return new Error(method, message)
     }
     query(sql: string) {
