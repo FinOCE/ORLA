@@ -2,7 +2,7 @@ import {Client as ClientJS, Collection, ClientOptions, Message} from 'discord.js
 const {glob} = require('glob')
 import {parse} from 'path'
 
-import Command, {CommandOptions} from './Command'
+import {CommandOptions} from './Command'
 import {Error} from './Error'
 import Database from './Database'
 

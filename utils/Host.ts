@@ -1,4 +1,3 @@
-import Client from './Client'
 import Series from './Series'
 
 type Snowflake = string

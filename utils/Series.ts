@@ -1,5 +1,3 @@
-import Client from './Client'
-
 export default class Series {
     public code: string
     public name: string
