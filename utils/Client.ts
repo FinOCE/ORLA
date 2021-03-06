@@ -4,7 +4,7 @@ import {parse} from 'path'
 
 import Command, {CommandOptions} from './Command'
 import {Error} from './Error'
-import {Database} from './Database'
+import Database from './Database'
 
 export default class Client extends ClientJS {
     commands: Collection<string, CommandOptions>
