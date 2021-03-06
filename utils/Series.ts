@@ -5,10 +5,9 @@ export default class Series {
     public name: string
     public logoURL: string
 
-    constructor(client: Client, hostCode: string, seriesCode: string) {
-        const series = client.hosts[hostCode].series[seriesCode]
-        this.code = seriesCode
-        this.name = series.title
-        this.logoURL = `https://orla.pro/assets/series/${series.image}.png`
+    constructor(data: Record<string, string>) {
+        this.code = data.code
+        this.name = data.title
+        this.logoURL = `https://orla.pro/assets/series/${data.image}.png`
     }
 }

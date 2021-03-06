@@ -1,8 +1,11 @@
 import {MessageEmbed, TextChannel} from 'discord.js'
 import moment from 'moment-timezone'
+
 import Client from '../utils/Client'
 import Event from '../utils/Event'
 import Tournament from '../utils/Tournament'
+import Server from '../utils/Server'
+import Host from '../utils/Host'
 
 export default abstract class Ready extends Event {
     constructor(client: Client) {
@@ -21,16 +24,12 @@ export default abstract class Ready extends Event {
             (async () => {
                 // Update client.servers
                 {(await client.query('SELECT * FROM `servers`'))?.getAll().forEach((server: Record<string, string>) => {
-                    Object.entries(server).forEach(([key, value]) => {
-                        if (value && /^[\[{]/.test(value)) server[key] = JSON.parse(value)
-                    })
-                    client.servers[server.id] = server
+                    client.servers[server.id] = new Server(server)
                 })}
 
                 // Update client.hosts
                 {(await client.query('SELECT * FROM `hosts`'))?.getAll().forEach((host: Record<string, string>) => {
-                    host.series = JSON.parse(host.series)
-                    client.hosts[host.name] = host
+                    client.hosts[host.name] = new Host(host)
                 })}
 
                 // Annoucements

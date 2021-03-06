@@ -34,8 +34,8 @@ export default class Tournament {
         this.reminded = (data.reminded === 1)
         this.startTime = data.ttime
         this.registrationTime = data.rtime
-        this.host = new Host(client, data.host)
-        this.series = (data.series) ? new Series(client, data.host, data.series) : null
+        this.host = client.hosts[data.host]
+        this.series = (data.series) ? client.hosts[data.host].series[data.series] : null
     }
 
     addUpcomingField(Embed: MessageEmbed, {timezone}: Record<string, string>) {

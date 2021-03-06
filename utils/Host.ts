@@ -1,24 +1,28 @@
 import Client from './Client'
 import Series from './Series'
 
+type Snowflake = string
+
 export default class Host {
     public code: string
     public name: string
-    public emoji: string
+    public emoji: Snowflake
     public color: string
     public logoURL: string
     public series: Record<string, Series> | null
 
-    constructor(client: Client, code: string) {
-        const host = client.hosts[code]
-        this.name = host.title
-        this.code = host.name
-        this.emoji = host.emoji
-        this.color = host.color
-        this.logoURL = `https://orla.pro/assets/hosts/${host.name}.png`
-        this.series = (host.series) ? (() => {
+    constructor(data: Record<string, string>) {
+        this.name = data.title
+        this.code = data.name
+        this.emoji = data.emoji
+        this.color = data.color
+        this.logoURL = `https://orla.pro/assets/hosts/${data.name}.png`
+        this.series = (data.series) ? (() => {
             const series: Record<string, Series> = {}
-            Object.keys(host.series).forEach((s: string) => {series[s] = new Series(client, host.name, s)})
+            data.series = JSON.parse(data.series)
+            Object.entries(data.series).forEach(([code, {title, image}]: Array<any>) => {
+                series[code] = new Series({code, title, image})
+            })
             return series
         })() : null
     }
