@@ -15,7 +15,7 @@ module.exports = (client, message) => {
         client.xpFromMessage.push([message.author.id])
 
         {(async () => {
-            const {User} = require('../utils/User')
+            const User = require('../utils/User')
             const user = await User.build(client, message.author.id)
             user.orla.xp.giveFromMessage()
             user.orla.xp.update(message)

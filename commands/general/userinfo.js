@@ -6,7 +6,7 @@ module.exports = {
         const moment = require('moment-timezone')
         
         // Create User object
-        const {User} = require('../../utils/User')
+        const User = require('../../utils/User')
         const user = await User.build(message.client, (message.mentions.members.first()) ? message.mentions.members.first().user.id : message.author.id)
         const member = (message.mentions.members.first()) ? message.mentions.members.first() : message.member
 
