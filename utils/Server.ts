@@ -1,6 +1,5 @@
 import Client from './Client'
-
-type Snowflake = string
+import {Snowflake} from 'discord.js'
 
 export default class Server {
     public id: Snowflake

@@ -1,6 +1,5 @@
 import Series from './Series'
-
-type Snowflake = string
+import {Snowflake} from 'discord.js'
 
 export default class Host {
     public code: string

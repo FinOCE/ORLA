@@ -1,8 +1,6 @@
-import {Message, User as UserJS} from 'discord.js'
+import {Message, User as UserJS, Snowflake} from 'discord.js'
 
 import Client from './Client'
-
-type Snowflake = string
 
 export default class User {
     private client: Client
