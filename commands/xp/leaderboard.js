@@ -21,7 +21,7 @@ module.exports = {
 
 			let range = (users.length - page * 10 < 10) ? users.length - page * 10 : 10
 			for (let i = 0; i < range; i++) {
-				const User = require('../../utils/User')
+				const User = require('../../utils/User').default
 				const user = await User.build(message.client, users[page*10+i].id)
 				list += `**#${page * 10 + i + 1}** <@${user.id}> - Level **${user.orla.xp.level}** (**${user.orla.xp.total}**)\n`
 			}

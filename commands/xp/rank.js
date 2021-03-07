@@ -8,7 +8,7 @@ module.exports = {
 		const member = (message.mentions.members.first()) ? message.mentions.members.first() : message.member
 		const nickname = (member.nickname) ? member.nickname : member.user.username
 
-		const User = require('../../utils/User')
+		const User = require('../../utils/User').default
 		const user = await User.build(message.client, member.user.id)
 
 		const Embed = new Discord.MessageEmbed()

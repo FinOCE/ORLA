@@ -10,7 +10,7 @@ module.exports = {
         const events = query.getAll()
         events.sort(function(a, b) {return a.ttime - b.ttime})
 
-        const User = require('../../utils/User')
+        const User = require('../../utils/User').default
         const user = await User.build(message.client, message.author.id)
         const timezone = user.timezone
 
