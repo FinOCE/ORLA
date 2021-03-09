@@ -4,6 +4,7 @@ import moment from 'moment-timezone'
 import Client from './Client'
 import Host from './Host'
 import Series from './Series'
+import Server from './Server'
 
 export default class Tournament {
     private client: Client
@@ -35,10 +36,10 @@ export default class Tournament {
         this.startTime = data.ttime
         this.registrationTime = data.rtime
         this.host = client.hosts[data.host]
-        this.series = (data.series) ? client.hosts[data.host].series[data.series] : null
+        this.series = (data.series) ? client.hosts[data.host].series![data.series] : null
     }
 
-    addUpcomingField(Embed: MessageEmbed, {timezone}: Record<string, string>) {
+    addUpcomingField(Embed: MessageEmbed, {timezone}: Server) {
         const icon = this.client.emojis.cache.get(this.client.hosts[this.host.code].emoji) ?? this.client.emojis.cache.get(this.client.config.defaultIcon)
         const stream = (this.streamURL) ? ` | [View Stream](${this.streamURL})` : ''
 
@@ -54,7 +55,7 @@ export default class Tournament {
         return Embed
     }
     announce() {
-        Object.values(this.client.servers).forEach(({timezone, announcements, pingrole}: Record<string, string>) => {
+        Object.values(this.client.servers).forEach(({timezone, announcements, pingrole}: Server) => {
             if (!announcements) return
             const Embed = new MessageEmbed()
                 .setColor(this.host.color)
@@ -85,7 +86,7 @@ export default class Tournament {
         this.client.query('UPDATE `tournaments` SET `announced`=1 WHERE `title`="'+this.name+'"')
     }
     notify() {
-        Object.values(this.client.servers).forEach(({timezone, notifications, pingrole}: Record<string, string>) => {
+        Object.values(this.client.servers).forEach(({timezone, notifications, pingrole}: Server) => {
             if (!notifications) return
             const Embed = new MessageEmbed()
                 .setColor(this.host.color)
