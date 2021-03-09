@@ -3,6 +3,7 @@ import {Snowflake} from 'discord.js'
 
 export default class Server {
     public id: Snowflake
+    public prefix: string
     public timezone: string
     public upcoming: Record<string, Snowflake>
     public announcements: Snowflake
@@ -15,8 +16,9 @@ export default class Server {
     public rankroles: Array<Snowflake>
     public stateroles: Record<string, Snowflake>
 
-    constructor(data: Record<string, string>) {
+    constructor(client: Client, data: Record<string, string>) {
         this.id = data.id
+        this.prefix = data.prefix ?? client.config.prefix
         this.timezone = data.timezone
         this.upcoming = JSON.parse(data.upcoming)
         this.announcements = data.announcements
