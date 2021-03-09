@@ -41,7 +41,7 @@ module.exports = {
 			}
 			case 'other': {
 				// If user is checking someones rank from their platform and ID
-				if (['epic', 'steam', 'xbox', 'ps'].indexOf(args[0].toLowerCase()) === -1) return message.client.error('invalidPlatform', message).send()
+				if (['epic', 'steam', 'xbox', 'ps', 'switch'].indexOf(args[0].toLowerCase()) === -1) return message.client.error('invalidPlatform', message).send()
 
 				playerInfo.platform = args[0].toLowerCase()
 				playerInfo.id = args[1]
@@ -79,7 +79,7 @@ module.exports = {
 			Object.values(player.modes).forEach(mode => {
 				const emote = message.client.guilds.cache.find(g => g.id === '690588183683006465').emojis.cache.find(e => e.name === rankEmojis[rankCodes.indexOf(mode.rank.replace(/ /g, ''))])
 				
-				const position = (mode.overall >= 1000) ? `Top ${Math.floor((100 - mode.percentile)*10)/10}%` : `#${mode.overall}`
+				const position = (!mode.overall) ? '' : ((mode.overall >= 1000) ? `*(Top ${Math.floor((100 - mode.percentile)*10)/10}%)*` : `*(#${mode.overall})*`)
 
 				const rank = (['Supersonic Legend', 'Unranked'].indexOf(mode.rank) !== -1) ? `${emote} (${mode.mmr})` : `${emote} Div ${mode.division} (${mode.mmr})`
 
@@ -94,7 +94,7 @@ module.exports = {
 				const streak = (mode.streak > 0) ? `🔥 ${mode.streak}` : `❄️ ${String(mode.streak).replace('-','')}`
 				const games = (mode.name === 'Casual') ? '' : `🕐 ${mode.games} - ${streak}`
 
-				Embed.addField(`__${mode.name}__ *(${position})*`, `${rank}\n${mmr}\n${games}`, true)
+				Embed.addField(`__${mode.name}__ ${position}`, `${rank}\n${mmr}\n${games}`, true)
 			})
 
 			// Add fields to evenly display ranks

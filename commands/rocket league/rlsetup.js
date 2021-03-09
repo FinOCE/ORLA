@@ -10,7 +10,7 @@ module.exports = {
 			return
 		}
 
-		if (['pc', 'ps', 'xbox'].indexOf(args[0].toLowerCase()) === -1) {
+		if (['pc', 'ps', 'xbox', 'epic', 'switch'].indexOf(args[0].toLowerCase()) === -1) {
 			message.client.error('invalidPlatform', message).send()
 			return
 		}
