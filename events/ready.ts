@@ -6,6 +6,7 @@ import Event from '../utils/Event'
 import Tournament from '../utils/Tournament'
 import Server from '../utils/Server'
 import Host from '../utils/Host'
+import Error from '../utils/Error'
 
 export default abstract class Ready extends Event {
     constructor(client: Client) {
@@ -24,12 +25,17 @@ export default abstract class Ready extends Event {
             (async () => {
                 // Update client.servers
                 {(await client.query('SELECT * FROM `servers`'))?.getAll().forEach((server: Record<string, string>) => {
-                    client.servers[server.id] = new Server(server)
+                    client.servers[server.id] = new Server(client, server)
                 })}
 
                 // Update client.hosts
                 {(await client.query('SELECT * FROM `hosts`'))?.getAll().forEach((host: Record<string, string>) => {
                     client.hosts[host.name] = new Host(host)
+                })}
+
+                // Update client.errors
+                {(await client.query('SELECT * FROM `errors`'))?.getAll().forEach((error: Record<string, string>) => {
+                    client.errors[error.code] = new Error(error)
                 })}
 
                 // Annoucements
@@ -48,7 +54,7 @@ export default abstract class Ready extends Event {
                 const tournaments = (await client.query('SELECT * FROM `tournaments` WHERE `ttime`>'+moment().unix()))?.getAll()
                 tournaments.sort((a: Record<string, any>, b: Record<string, any>) => {return Number(a.ttime) - Number(b.ttime)})
 
-                Object.values(client.servers).forEach(async (server: Record<string, any>) => {
+                Object.values(client.servers).forEach(async (server: Server) => {
                     if (server.upcoming === null) return
 
                     // Get timezone offset in correct format
