@@ -11,7 +11,7 @@ import Database from './Database'
 export default class Client extends ClientJS {
     commands: Collection<string, Command>
     config: Record<string, string>
-    xpFromVoice: Record<string, void>
+    xpFromVoice: Record<string, NodeJS.Timeout>
     xpFromMessage: Array<string>
     servers: Record<string, Server>
     hosts: Record<string, Host>
