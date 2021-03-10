@@ -9,8 +9,7 @@ module.exports = {
 		if (isNaN(args[1])) return
 		if (message.mentions.members.first() == undefined) return
 
-		const User = require('../../utils/User').default
-		user = await User.build(message.client, message.author.id)
+		const user = await (require('../../utils/User').default).build(message.client, message.author.id)
 		if (args[1] > 0) {
 			user.orla.xp.give(args[1])
 		} else {
