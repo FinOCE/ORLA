@@ -42,7 +42,7 @@ export default abstract class Message extends Event {
             if ((cmd.category === 'staff') && !message.member!.hasPermission('MANAGE_MESSAGES')) {
                 return this.client.error('invalidPermission', message).send()
             }
-            if ((cmd.onlyORLA !== undefined) && isMainServer) {
+            if (!cmd.onlyORLA && isMainServer) {
                 return this.client.error('notMainServer', message).send()
             }
             cmd.run(message, args)
