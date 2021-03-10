@@ -2,14 +2,14 @@ import {Client as ClientJS, Collection, ClientOptions, Message, MessageEmbed} fr
 const {glob} = require('glob')
 import {parse} from 'path'
 
-import {CommandOptions} from './Command'
+import Command from './Command'
 import Server from './Server'
 import Host from './Host'
 import Error from './Error'
 import Database from './Database'
 
 export default class Client extends ClientJS {
-    commands: Collection<string, CommandOptions>
+    commands: Collection<string, Command>
     config: Record<string, string>
     xpFromVoice: Record<string, void>
     xpFromMessage: Array<string>
