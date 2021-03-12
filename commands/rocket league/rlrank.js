@@ -54,9 +54,9 @@ module.exports = {
 		const loading = message.client.guilds.cache.find(g => g.id === '690588183683006465').emojis.cache.find(e => e.name === 'd_loading')
 		message.channel.send(`${loading} Getting rank...`).then(async msg => {
 			const player = await (require('../../utils/Stat').default).build(playerInfo)
-
+			
 			// Send error if player not found or request is timed out
-			if (player === undefined) return msg.edit(' ', (requestInitiated+20 > moment().unix()) ?
+			if (player === null) return msg.edit(' ', (requestInitiated+20 > moment().unix()) ?
 				message.client.error('profileNotFound', message).createEmbed()
 				:message.client.error('requestTimeout', message).createEmbed()
 			)
