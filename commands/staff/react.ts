@@ -2,7 +2,7 @@ import Command, {CommandOptions} from '../../utils/Command'
 import {Message, Snowflake, TextChannel} from 'discord.js';
 import Client from '../../utils/Client'
 
-export default class PfpCommand extends Command {
+export default class ReactCommand extends Command {
     constructor(client: Client, options: CommandOptions) {
         super(client, options)
     }
