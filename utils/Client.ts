@@ -1,4 +1,4 @@
-import {Client as ClientJS, Collection, ClientOptions, Message, MessageEmbed} from 'discord.js'
+import {Client as ClientJS, Collection, ClientOptions, Message, MessageEmbed, Snowflake} from 'discord.js'
 const {glob} = require('glob')
 import {parse} from 'path'
 
@@ -11,9 +11,9 @@ import Database from './Database'
 export default class Client extends ClientJS {
     commands: Collection<string, Command>
     config: Record<string, string>
-    xpFromVoice: Record<string, NodeJS.Timeout>
-    xpFromMessage: Array<string>
-    servers: Record<string, Server>
+    xpFromVoice: Record<Snowflake, NodeJS.Timeout>
+    xpFromMessage: Array<Snowflake>
+    servers: Record<Snowflake, Server>
     hosts: Record<string, Host>
     errors: Record<string, Error>
 
@@ -48,7 +48,7 @@ export default class Client extends ClientJS {
 
         glob('./events/*+(.js|.ts)', (err: string, files: Array<string>) => {
             if (err) throw err
-            files.map(f => {return `.${f}`}).forEach(file => {
+            files.map(file => {return `.${file}`}).forEach(file => {
                 const {name} = parse(file)
 
                 if (file.endsWith('js')) {
@@ -78,7 +78,7 @@ export default class Client extends ClientJS {
                 const Embed = new MessageEmbed()
                     .setColor(this.client.config.color)
                     .setFooter(`ORLA - Requested by ${this.message.author.tag}`, this.client.config.logo)
-                    .setTitle('Error: ' + this.error.title)
+                    .setTitle(`Error: ${this.error.title}`)
                     .setDescription(this.error.description.replace(/%PREFIX%/g, this.client.servers[this.message.guild!.id].prefix))
 
                 return Embed
