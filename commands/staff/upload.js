@@ -163,7 +163,9 @@ module.exports = {
 			if (!submit) return
 			if (submit.toLowerCase().includes('y')) {
 				let topen = (event.open) ? 1 : 0
-				message.client.query('INSERT INTO `tournaments` VALUES("'+event.name+'", "'+event.series+'", "'+event.host+'", "'+event.mode+'", "'+event.startTime+'", "'+topen+'", "'+event.URL+'", "'+event.customURL+'", "'+event.prize+'", "'+event.registrationTime+'", "'+event.streamURL+'", 0, 0)')
+				const series = (event.series !== null) ? `"${event.series}"` : 'NULL'
+				const streamURL = (event.streamURL !== null) ? `"${event.streamURL}"` : 'NULL'
+				message.client.query('INSERT INTO `tournaments` VALUES("'+event.name+'", '+series+', "'+event.host+'", "'+event.mode+'", "'+event.startTime+'", "'+topen+'", "'+event.URL+'", "'+event.customURL+'", "'+event.prize+'", "'+event.registrationTime+'", '+streamURL+', 0, 0)')
 				message.channel.send('Event successfully uploaded.')
 			} else {
 				message.channel.send('Upload cancelled.')
