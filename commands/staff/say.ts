@@ -1,15 +1,19 @@
-module.exports = {
-	desc: 'sends messages with an embed',
-	syntax: '[#channel] [image URL] [title] | [message]',
-	run(message, args) {
-        const Discord = require('discord.js')
-        
+import Command, {CommandOptions} from '../../utils/Command'
+import {Message, TextChannel, MessageEmbed} from 'discord.js';
+import Client from '../../utils/Client'
+
+export default class SayCommand extends Command {
+    constructor(client: Client, options: CommandOptions) {
+        super(client, options)
+    }
+
+    run(message: Message, args: Array<string>) {
         // Ignore if no args are sent
         if (!args[0]) return
 
         // Create Embed
-        const Embed = new Discord.MessageEmbed()
-            .setColor(message.client.config.color)
+        const Embed = new MessageEmbed()
+            .setColor(this.client.config.color)
         
         // Redirect to new channel if provided
         if (args[0].startsWith('<#') && args[0].endsWith('>')) {
@@ -36,9 +40,9 @@ module.exports = {
 
         // Send to correct channel
         if (channel) {
-            channel.send(Embed)
+            (channel as TextChannel).send(Embed)
         } else {
             message.channel.send(Embed)
         }
-	}
+    }
 }
