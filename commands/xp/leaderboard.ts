@@ -3,7 +3,7 @@ import {Message, MessageEmbed} from 'discord.js';
 import Client from '../../utils/Client'
 import User from '../../utils/User'
 
-export default class ExitCommand extends Command {
+export default class LeaderboardCommand extends Command {
     constructor(client: Client, options: CommandOptions) {
         super(client, options)
     }
