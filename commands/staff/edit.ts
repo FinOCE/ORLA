@@ -11,10 +11,10 @@ export default class ExitCommand extends Command {
         if (!args[2]) return this.client.error('invalidSyntax', message).send()
 
 		// Get channel and message
-		const channel = await message.client.channels.fetch(args[0])
+		const channel = (/[0-9]{18}/.test(args[0])) ? await message.client.channels.fetch(args[0]) : false
         if (!channel) return this.client.error('invalidSyntax', message).send()
 
-		const msg = await (channel as TextChannel).messages.fetch(args[1])
+		const msg = (/[0-9]{18}/.test(args[0])) ? await (channel as TextChannel).messages.fetch(args[1]) : false
         if (!msg) return this.client.error('invalidSyntax', message).send()
 
         args.shift()
