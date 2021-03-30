@@ -9,7 +9,7 @@ import Error from './Error'
 import Database from './Database'
 
 export default class Client extends ClientJS {
-    commands: Collection<string, Command>
+    commands: Record<string, Collection<string, Command>>
     config: Record<string, string>
     xpFromVoice: Record<Snowflake, NodeJS.Timeout>
     xpFromMessage: Array<Snowflake>
@@ -19,7 +19,7 @@ export default class Client extends ClientJS {
 
     constructor(options?: ClientOptions) {
         super(options)
-        this.commands = new Collection()
+        this.commands = {}
         this.config = require('../config.json')
         this.xpFromVoice = {}
         this.xpFromMessage = []
@@ -31,17 +31,18 @@ export default class Client extends ClientJS {
             if (err) throw err
             files.map(f => {return `.${f}`}).forEach(file => {
                 const {dir, name} = parse(file)
-                const category = dir.split('/').pop()
+                const category = dir.split('/').pop()!
+                if (!this.commands[category]) this.commands[category] = new Collection()
 
                 if (file.endsWith('js')) {
                     // JavaScript commands
                     const command = require(file)
                     Object.assign(command, {category, name})
-                    this.commands.set(name, command)
+                    this.commands[category].set(name, command)
                 } else if (file.endsWith('ts')) {
                     // TypeScript commands
                     const command = new (require(file).default)(this, {name, category})
-                    this.commands.set(name, command)
+                    this.commands[category].set(name, command)
                 }
             })
         })

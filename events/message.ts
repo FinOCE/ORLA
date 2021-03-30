@@ -1,4 +1,4 @@
-import {Message as MessageJS} from 'discord.js'
+import {Collection, Message as MessageJS} from 'discord.js'
 import Event from '../utils/Event'
 import Client from '../utils/Client'
 import User from '../utils/User'
@@ -35,7 +35,7 @@ export default abstract class Message extends Event {
         const args = message.content.slice(prefix.length).split(/ +/)
         const command = args.shift()!.toLowerCase()
 
-        const cmd = this.client.commands.get(command)!
+        const cmd = Object.values(this.client.commands).find(category => category.has(command))?.get(command)
         if (!cmd) return
 
         message.delete().then(() => {
