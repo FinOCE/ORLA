@@ -1,5 +1,5 @@
 module.exports = {
-    desc: 'checks basic info about a Discord account',
+    description: 'checks basic info about a Discord account',
     syntax: '[@user]',
     async run(message, args) {
         const Discord = require('discord.js')

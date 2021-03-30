@@ -1,5 +1,5 @@
 module.exports = {
-	desc: 'checks rocket league account stats',
+	description: 'checks rocket league account stats',
 	syntax: '[platform] [account]',
 	onlyORLA: true,
 	async run(message, args) {

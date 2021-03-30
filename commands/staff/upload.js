@@ -1,5 +1,5 @@
 module.exports = {
-	desc: 'uploads tournament to the system',
+	description: 'uploads tournament to the system',
 	syntax: '',
 	onlyORLA: true,
 	async run(message, args) {

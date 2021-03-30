@@ -1,5 +1,5 @@
 module.exports = {
-    desc: 'checks details of the next upcoming tournament',
+    description: 'checks details of the next upcoming tournament',
 	syntax: '',
 	async run(message, args) {
         const Discord = require('discord.js')
