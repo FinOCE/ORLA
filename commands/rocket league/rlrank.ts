@@ -3,6 +3,7 @@ import {Message, MessageEmbed} from 'discord.js';
 import moment from 'moment-timezone'
 import Client from '../../utils/Client'
 import Stat, {playerInfo} from '../../utils/Stat'
+import Rank from '../../utils/Rank'
 
 export default class RLRankCommand extends Command {
     constructor(client: Client, options: CommandOptions) {
@@ -78,31 +79,29 @@ export default class RLRankCommand extends Command {
 			
 			if (player.user.avatarURL) Embed.setThumbnail(player.user.avatarURL)
             
-            // Define rank codes and emoji names for later
-			const rankCodes = ['Unranked','BronzeI','BronzeII','BronzeIII','SilverI','SilverII','SilverIII','GoldI','GoldII','GoldIII','PlatinumI','PlatinumII','PlatinumIII','DiamondI','DiamondII','DiamondIII','ChampionI','ChampionII','ChampionIII','GrandChampionI','GrandChampionII','GrandChampionIII','SupersonicLegend']
-			const rankEmojis = ['00_unranked','01_bronze1','02_bronze2','03_bronze3','04_silver1','05_silver2','06_silver3','07_gold1','08_gold2','09_gold3','10_plat1','11_plat2','12_plat3','13_diamond1','14_diamond2','15_diamond3','16_champion1','17_champion2','18_champion3','19_grandchampion1','20_grandchampion2','21_grandchampion3','22_supersoniclegend']
 			const d_up = this.client.guilds.cache.find(g => g.id === this.client.config.mainServer)!.emojis.cache.find(e => e.name === 'd_up')!
 			const d_down = this.client.guilds.cache.find(g => g.id === this.client.config.mainServer)!.emojis.cache.find(e => e.name === 'd_down')!
-			
+
 			Object.values(player.modes).forEach(mode => {
-				const emote = message.client.guilds.cache.find(g => g.id === this.client.config.mainServer)!.emojis.cache.find(e => e.name === rankEmojis[rankCodes.indexOf(mode.rank.replace(/ /g, ''))])
+				const rank = new Rank(this.client, mode)
 				
-				const position = (!mode.overall) ? '' : ((mode.overall >= 1000) ? `*(Top ${Math.floor((100 - mode.percentile)*10)/10}%)*` : `*(#${mode.overall})*`)
-
-				const rank = (['Supersonic Legend', 'Unranked'].indexOf(mode.rank) !== -1) ? `${emote} (${mode.mmr})` : `${emote} Div ${mode.division} (${mode.mmr})`
-
-				const mmr = (mode.rank === 'Supersonic Legend') ?
-					(mode.down === undefined) ?
+				const rankText = (['Supersonic Legend', 'Unranked'].indexOf(mode.rank) !== -1) ? `${rank.emote} (${rank.mmr})` : `${rank.emote} Div ${rank.division.name} (${rank.mmr})`
+				const position = (!mode.position.overall) ?
+					''
+					: ((mode.position.overall >= 1000) ?
+						`*(Top ${Math.floor((100 - mode.position.percentile)*10)/10}%)*`
+						: `*(#${mode.position.overall})*`)
+				const mmr = (rank.name === 'Supersonic Legend') ?
+					(rank.division.deltaDown === undefined) ?
 						''
-						:`${d_down} ${mode.down}`
-					:((mode.rank === 'Unranked') || (mode.down === undefined) || (mode.up === undefined)) ?
+						:`${d_down} ${rank.division.deltaDown}`
+					:((mode.rank === 'Unranked') || (rank.division.deltaDown === undefined) || (rank.division.deltaUp === undefined)) ?
 						''
-						:`${d_up} ${mode.up} ${d_down} ${mode.down}`
-
-				const streak = (mode.streak > 0) ? `🔥 ${mode.streak}` : `❄️ ${String(mode.streak).replace('-','')}`
+						:`${d_up} ${rank.division.deltaUp} ${d_down} ${rank.division.deltaDown}`
+				const streak = (mode.streak > 0) ? `🔥 ${mode.streak}` : `❄️ ${Math.abs(mode.streak)}`
 				const games = (mode.name === 'Casual') ? '' : `🕐 ${mode.games} - ${streak}`
 
-				Embed.addField(`__${mode.name}__ ${position}`, `${rank}\n${mmr}\n${games}`, true)
+				Embed.addField(`__${mode.name}__ ${position}`, `${rankText}\n${mmr}\n${games}`, true)
 			})
 
 			// Add fields to evenly display ranks
