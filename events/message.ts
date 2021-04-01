@@ -1,4 +1,4 @@
-import {Collection, Message as MessageJS} from 'discord.js'
+import {Message as MessageJS} from 'discord.js'
 import Event from '../utils/Event'
 import Client from '../utils/Client'
 import User from '../utils/User'

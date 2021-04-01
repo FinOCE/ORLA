@@ -1,7 +1,6 @@
 import Command, {CommandOptions} from '../../utils/Command'
-import {Collection, Message, MessageEmbed} from 'discord.js';
+import {Message, MessageEmbed} from 'discord.js';
 import Client from '../../utils/Client'
-import { defaultMaxListeners } from 'node:events';
 
 export default class HelpCommand extends Command {
     constructor(client: Client, options: CommandOptions) {
